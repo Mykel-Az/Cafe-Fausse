@@ -1,3 +1,7 @@
+# =========================
+# Node / React
+# =========================
+
 # Logs
 logs
 *.log
@@ -134,3 +138,39 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# =========================
+# Python / Flask
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Flask instance folder
+instance/
+
+# Environment variables
+.env
+.env.*
+*.env
+
+# SQLite database
+*.db
+*.sqlite3
+
+# Flask migrations (optional if using Alembic)
+migrations/__pycache__/
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/

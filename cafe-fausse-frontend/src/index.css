@@ -1,0 +1,225 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: 0;
+}
+
+body{
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #fafafa;
+  color: #222;
+}
+
+.page-container{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.navbar {
+  background-color: #111;
+  padding: 1rem 2rem;
+}
+
+.nav-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+/* Home page */
+
+.hero {
+  background-color: #222;
+  color: #fff;
+  padding: 4rem 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+.home-section {
+  margin-bottom: 2rem;
+}
+
+.home-section h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.home-section p {
+  line-height: 1.6;
+}
+
+
+/* Menu page */
+
+.menu-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.menu-category {
+  margin-bottom: 2.5rem;
+}
+
+.menu-category h2 {
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+}
+
+.menu-description {
+  margin-bottom: 1rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* About page */
+
+.about-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.about-section {
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.about-section h2 {
+  margin-bottom: 0.75rem;
+}
+ 
+
+/* gallery */
+
+.gallery-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.gallery-section {
+  margin-bottom: 3rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.gallery-item {
+  background-color: #ddd;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+blockquote {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 4px solid #ccc;
+  font-style: italic;
+}
+
+
+/* Reservation */
+
+.reservation-form {
+  max-width: 400px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reservation-form input,
+.reservation-form button {
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+.reservation-form button {
+  background-color: #111;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.reservation-form button:hover {
+  opacity: 0.9;
+}
+
+select option:disabled {
+  color: #999;
+}
+
+/* Footer */
+
+.footer {
+  background-color: #111;
+  color: #fff;
+  padding: 2rem;
+  margin-top: 3rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.footer-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.footer-form input {
+  padding: 0.5rem;
+}
+
+.footer-form button {
+  background-color: #fff;
+  color: #111;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.footer-message {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
