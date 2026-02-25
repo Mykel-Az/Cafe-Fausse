@@ -56,6 +56,7 @@ def available_time_slots():
 @reservation_bp.route('/reservations/create', methods=['POST'])
 def create_reservation_route():
     data = request.get_json()
+    print("requested-data", data)
     customer_id = data.get('customer_id')
     date = data.get('date')
     time = data.get('time')

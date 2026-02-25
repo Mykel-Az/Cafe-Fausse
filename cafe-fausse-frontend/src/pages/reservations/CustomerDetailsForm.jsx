@@ -8,66 +8,104 @@ export default function CustomerDetailsForm({
     loadingSlots,
     allSlots
 }) {
+    // The hook's handleChange reads e.target.name and e.target.value,
+    // so we dispatch a real synthetic-compatible object for time slot clicks
+    function selectTime(time) {
+        handleChange({ target: { name: "time", value: time } });
+    }
+
     return (
-        <form className="reservation-form" onSubmit={handleSubmit}>
+        <form className="res-form" onSubmit={handleSubmit}>
+
             {(!isExistingCustomer || !completeProfile) && (
                 <>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Full Name"
-                        value={formData.name}
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="text"
-                        name="phone"
-                        placeholder="Phone Number"
-                        value={formData.phone}
-                        onChange={handleChange}
-                    />
+                    <div className="field">
+                        <label htmlFor="res-name">Full Name</label>
+                        <input
+                            id="res-name"
+                            type="text"
+                            name="name"
+                            placeholder="e.g. Jane Smith"
+                            value={formData.name}
+                            onChange={handleChange}
+                            autoComplete="name"
+                        />
+                    </div>
+
+                    <div className="field">
+                        <label htmlFor="res-phone">Phone Number</label>
+                        <input
+                            id="res-phone"
+                            type="tel"
+                            name="phone"
+                            placeholder="e.g. (202) 555-0100"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            autoComplete="tel"
+                        />
+                    </div>
                 </>
             )}
 
-            <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleDateChange}
-            />
+            <div className="field">
+                <label htmlFor="res-date">Date</label>
+                <input
+                    id="res-date"
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleDateChange}
+                />
+            </div>
 
-            {loadingSlots && <p>Checking availability...</p>}
+            {/* Time slots — horizontal pill grid instead of dropdown */}
+            {(loadingSlots || allSlots.length > 0) && (
+                <div>
+                    <span className="time-slots-label">Select a Time</span>
 
-            {allSlots.length > 0 && (
-                <select
-                    name="time"
-                    value={formData.time}
-                    onChange={handleChange}
-                >
-                    <option value="">Select a time slot</option>
-                    {allSlots.map((slot) => (
-                        <option
-                            key={slot.time}
-                            value={slot.time}
-                            disabled={!slot.available}
-                        >
-                            {slot.time} {slot.available ? "" : "(Fully Booked)"}
-                        </option>
-                    ))}
-                </select>
+                    {loadingSlots ? (
+                        <p className="time-slots-loading">Checking availability…</p>
+                    ) : (
+                        <div className="time-slots-grid" role="group" aria-label="Available time slots">
+                            {allSlots.map(slot => (
+                                <button
+                                    key={slot.time}
+                                    type="button"
+                                    disabled={!slot.available}
+                                    onClick={() => selectTime(slot.time)}
+                                    className={[
+                                        "time-slot-btn",
+                                        formData.time === slot.time ? "selected" : "",
+                                        !slot.available ? "booked" : ""
+                                    ].filter(Boolean).join(" ")}
+                                    aria-pressed={formData.time === slot.time}
+                                    aria-label={`${slot.time}${!slot.available ? " — fully booked" : ""}`}
+                                >
+                                    {slot.time}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
             )}
 
             {formData.date && (
-                <input
-                    type="number"
-                    name="guests"
-                    placeholder="Number of Guests"
-                    value={formData.guests}
-                    onChange={handleChange}
-                />
+                <div className="field">
+                    <label htmlFor="res-guests">Number of Guests</label>
+                    <input
+                        id="res-guests"
+                        type="number"
+                        name="guests"
+                        placeholder="e.g. 2"
+                        min="1"
+                        max="10"
+                        value={formData.guests}
+                        onChange={handleChange}
+                    />
+                </div>
             )}
 
-            <button type="submit">Next</button>
+            <button type="submit" className="res-submit">Continue</button>
         </form>
     );
 }

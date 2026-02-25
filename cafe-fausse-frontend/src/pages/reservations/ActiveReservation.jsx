@@ -6,23 +6,24 @@ export default function ActiveReservations({
     onCreateNew
 }) {
     return (
-        <div className="existing-reservations">
-            <h2>Welcome back, Your Active Reservations</h2>
+        <div>
+            <p className="res-cards-head">Your Reservations</p>
 
             {activeReservations.map((res) => (
-                <div key={res.id} className="reservation-card">
-                    <p><strong>Reservation ID:</strong> {res.id}</p>
+                <div key={res.id} className="res-card">
+                    <p><strong>ID:</strong> {res.id}</p>
                     <p><strong>Date:</strong> {new Date(res.time_slot).toLocaleString()}</p>
                     <p><strong>Guests:</strong> {res.guest_count}</p>
                     <p><strong>Table:</strong> {res.table_number}</p>
-
-                    <button onClick={() => openReservation(res.id)}>View</button>
-                    <button onClick={() => cancelReservation(res.id)}>Cancel</button>
-                    <button onClick={() => startEditing(res)}>Edit </button>
+                    <div className="res-card-actions">
+                        <button className="res-card-btn" onClick={() => openReservation(res.id)}>View</button>
+                        <button className="res-card-btn" onClick={() => startEditing(res)}>Edit</button>
+                        <button className="res-card-btn cancel" onClick={() => cancelReservation(res.id)}>Cancel</button>
+                    </div>
                 </div>
             ))}
 
-            <button onClick={onCreateNew}>Create New Reservation</button>
+            <button className="res-new-btn" onClick={onCreateNew}>+ New Reservation</button>
         </div>
     );
 }

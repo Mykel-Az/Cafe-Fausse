@@ -34,7 +34,7 @@ export function useReservationFlow() {
     const [confirmation, setConfirmation] = useState(null);
     const [activeReservations, setActiveReservations] = useState([]);
     const [showReservationOptions, setShowReservationOptions] = useState(false);
-    const [editingReservationId, setEditingReservationId] = useState(null)
+    const [editingReservationId, setEditingReservationId] = useState(null);
 
     const allSlots = useMemo(() => {
         return [
@@ -65,7 +65,6 @@ export function useReservationFlow() {
         setEditingReservationId(null);
     }
 
-    
     async function fetchAvailability(date) {
         if (!date) return;
 
@@ -85,7 +84,7 @@ export function useReservationFlow() {
 
     async function startEditing(reservation) {
         const date = reservation.time_slot.split("T")[0];
-        const time = reservation.time_slot.split("T")[1].slice(0,5);
+        const time = reservation.time_slot.split("T")[1].slice(0, 5);
 
         setEditingReservationId(reservation.id);
 
@@ -99,9 +98,8 @@ export function useReservationFlow() {
         setShowReservationOptions(false);
         setStep(2);
 
-        await fetchAvailability(date);   
+        await fetchAvailability(date);
     }
-
 
     async function handleEmailCheck(e) {
         e.preventDefault();
@@ -140,35 +138,35 @@ export function useReservationFlow() {
                 setStep(2);
             }
 
-        } catch (error){
+        } catch (error) {
             setMessage(error.message || "Server error. Please try again.");
         }
     }
 
     async function handleDateChange(e) {
         const selectedDate = e.target.value;
-
         setFormData(prev => ({ ...prev, date: selectedDate, time: "" }));
         await fetchAvailability(selectedDate);
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
+        setMessage("");
 
         let id = customerId;
 
         try {
             if (!isExistingCustomer) {
-                const customer = await createCustomer(formData.name, formData.email, formData.phone);
-                id = customer.id;
+                const response = await createCustomer(formData.name, formData.email, formData.phone);
+                id = response.customer.id;
                 setCustomerId(id);
             }
 
             if (isExistingCustomer && !completeProfile) {
-                const data = await updateCustomer(id, formData.name, formData.phone);
+                await updateCustomer(id, formData.name, formData.phone);
             }
 
-            let data
+            let data;
 
             if (editingReservationId) {
                 data = await updateReservation(
@@ -185,27 +183,27 @@ export function useReservationFlow() {
                     formData.guests
                 );
             }
+
             setConfirmation(data.reservation);
             setEditingReservationId(null);
 
         } catch (error) {
-            setMessage( error.message || "An error occurred while submitting your reservation.");
+            setMessage(error.message || "An error occurred while submitting your reservation.");
         }
     }
 
     async function openReservation(reservationId) {
-
         try {
-            const data  = await getReservationById(reservationId);
+            const data = await getReservationById(reservationId);
             setConfirmation(data.reservation);
         } catch (error) {
-            setMessage(error.message || "Server error. Please try again.")
+            setMessage(error.message || "Server error. Please try again.");
         }
     }
 
     async function cancelReservation(reservationId) {
         try {
-            const data = await cancelReservationById(reservationId);
+            await cancelReservationById(reservationId);
             const updated = activeReservations.filter(r => r.id !== reservationId);
             setActiveReservations(updated);
 
@@ -213,8 +211,8 @@ export function useReservationFlow() {
                 setShowReservationOptions(false);
                 setStep(2);
             }
-        } catch (error){
-            setMessage(error.message || "Server error. Please try again.")
+        } catch (error) {
+            setMessage(error.message || "Server error. Please try again.");
         }
     }
 
