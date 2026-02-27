@@ -62,3 +62,19 @@ class Reservation(db.Model):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
+    
+
+class Staff(db.Model):
+    __tablename__ = 'staff'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
+    def to_dict(self):
+        return{
+            'id': self.id,
+            'usename': self.username,
+            'created_at': self.created_at.isoformat()
+        }

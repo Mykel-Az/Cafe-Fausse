@@ -1,10 +1,10 @@
 export default function EmailStep({ email, onChange, onSubmit }) {
     return (
-        <form className="res-form" onSubmit={onSubmit}>
+        <form className="res-form" onSubmit={onSubmit} noValidate>
             <div className="field">
-                <label htmlFor="email">Email Address</label>
+                <label htmlFor="res-email">Email Address</label>
                 <input
-                    id="email"
+                    id="res-email"
                     type="email"
                     name="email"
                     placeholder="you@example.com"
@@ -13,8 +13,11 @@ export default function EmailStep({ email, onChange, onSubmit }) {
                     autoComplete="email"
                     required
                 />
+                <span className="field-hint">
+                    We'll use this to look up or create your account
+                </span>
             </div>
-            <button type="submit" className="res-submit">Continue</button>
+            <button type="submit" className="res-submit">Continue →</button>
         </form>
     );
 }

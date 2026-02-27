@@ -1,30 +1,41 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Menu from "./pages/Menu";
-import Reservations from "./pages/reservations/Reservations";
-import Gallery from "./pages/Gallery";
 
-// Inner pages need top offset for the fixed navbar (68px)
-const Padded = ({ children }) => (
-    <div style={{ paddingTop: "68px" }}>{children}</div>
-);
+import Home         from "./pages/Home";
+import About        from "./pages/About";
+import Menu         from "./pages/Menu";
+import Reservations from "./pages/reservations/Reservations";
+import Gallery      from "./pages/Gallery";
+
+import AdminLogin        from "./pages/admin/AdminLogin";
+import AdminLayout       from "./pages/admin/AdminLayout";
+import Dashboard         from "./pages/admin/Dashboard";
+import AdminReservations from "./pages/admin/AdminReservations";
+import AdminCustomers    from "./pages/admin/AdminCustomers";
+
 
 function App() {
     return (
         <Router>
-            <Navbar />
             <Routes>
-                <Route path="/"             element={<Home />} />
-                <Route path="/about"        element={<Padded><About /></Padded>} />
-                <Route path="/menu"         element={<Padded><Menu /></Padded>} />
-                <Route path="/reservations" element={<Padded><Reservations /></Padded>} />
-                <Route path="/gallery"      element={<Padded><Gallery /></Padded>} />
+                {/* Public site  */}
+                <Route path="/" element={<><Navbar /><Home /><Footer /></>} />
+                <Route path="/about" element={<><Navbar /><About /><Footer /></>} />
+                <Route path="/menu" element={<><Navbar /><Menu /><Footer /></>} />
+                <Route path="/reservations" element={<><Navbar /><Reservations /><Footer /></>} />
+                <Route path="/gallery" element={<><Navbar /><Gallery /><Footer /></>} />
+
+                {/* Admin portal */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="dashboard"    element={<Dashboard />} />
+                    <Route path="reservations" element={<AdminReservations />} />
+                    <Route path="customers"    element={<AdminCustomers />} />
+                </Route>
             </Routes>
-            <Footer />
         </Router>
     );
 }

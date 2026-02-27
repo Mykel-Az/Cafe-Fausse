@@ -31,7 +31,7 @@ def available_time_slots():
     date_str = request.args.get('date')
     customer_id = request.args.get('customer_id')
 
-    print(f"Received request for available time slots on date: {date_str}")
+    print(f"Received request for available: {date_str, customer_id}")
     if not date_str:
         return jsonify({'error': 'Date parameter is required'}), 400
     
@@ -42,7 +42,8 @@ def available_time_slots():
     
     if customer_id:
         if not check_same_day_reservation(customer_id, requested_date=selected_date):
-            return jsonify({'error': 'You already have a reservation on this date.'})
+            print('ERROR: Same day error')
+            return jsonify({'error': 'You already have a reservation on this date.'}), 400
     
     time_slots, error = get_available_time_slots(selected_date)
     print(f"Available time slots for {selected_date}: {time_slots}")
@@ -103,7 +104,7 @@ def update_reservation_route(reservation_id):
 def cancel_reservation_route(reservation_id):
     success, result = cancel_reservation(reservation_id)
     if success:
-        return jsonify({'message': 'Reservation cancelled successfully', 'reservation': result})
+        return jsonify({'message': 'Reservation cancelled successfully', 'reservation': result}), 200
     
-    return jsonify({'error': result})
+    return jsonify({'error': result}), 400
 

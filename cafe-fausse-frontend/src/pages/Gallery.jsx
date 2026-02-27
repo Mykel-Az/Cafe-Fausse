@@ -1,78 +1,35 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 const IMAGES = [
-    { src: "/gallery-cafe-interior.webp",  alt: "Elegant dining room with crystal chandeliers", label: "Dining Room" },
-    { src: "/gallery-special-event.webp",  alt: "Special event evening at Café Fausse",          label: "Special Events" },
-    { src: "/home-cafe-fausse.webp",        alt: "Grand hall at Café Fausse",                     label: "The Grand Hall" },
-    { src: "/gallery-ribeye-steak.webp",    alt: "Signature ribeye steak, beautifully plated",    label: "Signature Dish" },
+    { src: "/gallery_img/Grand-Dining-Hall.png",          alt: "Bright luxury grand dining hall with chandeliers",         label: "Interior Ambiance",  group: "Interior Ambiance" },
+    { src: "/gallery_img/Chandelier-Ceiling-Detail.png",  alt: "Crystal chandelier hanging from ornate carved ceiling",    label: "Chandelier Detail",  group: "Interior Ambiance" },
+    { src: "/gallery-cafe-interior.webp",                  alt: "Elegant dining room",                                      label: "Dining Room",        group: "Interior Ambiance" },
 
-    { src: "/Menu_img/starters_img/Bruschetta.png", alt: "Bruschetta", label: "Signature Dish" },
-    { src: "/Menu_img/starters_img/Caesar-Salad.png", alt: "Caesar Salad", label: "Signature Dish"},
-    { src: "/Menu_img/mains_img/Grilled-Salmon.png", alt: "Grilled salmo", label: "Signature Dish"},
-          
-    { src: "/Menu_img/mains_img/Vegetable-Risotto.png", alt: "Vegetable", label: "Signature Dish"}, 
-    { src: "/Menu_img/desserts_img/Tiramisu.png", alt: "Tiramisu", label: "Signature Dish" },
-    
-    { src: "/Menu_img/desserts_img/Cheesecake.png", alt: "Cheesecake", label: "Signature Dish" },
-    { src: "/Menu_img/beverages_img/Red-Wine.png", alt: "Red Wine", label: "Signature Dish" },
-    
-    { src: "/Menu_img/beverages_img/White-Wine.png", alt: "White Wine", label: "Signature Dish" },
-    { src: "/Menu_img/beverages_img/Craft-Beer.png", alt: "Craft Beer", label: "Signature Dish" },
-    { src: "/Menu_img/beverages_img/Espresso.png", alt: "Espresso", label: "Signature Dish" },
+    { src: "/gallery_img/Formal-Private-Dinner Event.png", alt: "Formal private dinner event in luxury hall",              label: "Private Dinner",     group: "Special Events" },
+    { src: "/gallery_img/Wedding-Reception.png",           alt: "Elegant daytime wedding reception",                        label: "Wedding Reception",  group: "Special Events" },
+    { src: "/gallery_img/Wine-Pairing-Event.png",          alt: "Afternoon wine pairing event",                             label: "Wine Pairing",       group: "Special Events" },
+    { src: "/gallery-special-event.webp",                  alt: "Special event evening at Café Fausse",                    label: "Special Event",      group: "Special Events" },
 
-    // INTERIOR AMBIANCE
-{
-  src: "/gallery_img/Grand-Dining-Hall.png",
-  alt: "Bright luxury European grand dining hall with chandeliers and ornate ceilings",
-  label: "Interior Ambiance"
-},
-{
-  src: "/gallery_img/Chandelier-Ceiling-Detail.png",
-  alt: "Crystal chandelier hanging from ornate carved ceiling in luxury restaurant",
-  label: "Interior Ambiance"
-},
+    { src: "/gallery_img/Chef-Plating-in-Elegant-Kitchen.png", alt: "Chef carefully plating gourmet dish",                 label: "Chef at Work",       group: "Behind the Scenes" },
+    { src: "/gallery_img/Dessert-Finishing-Touch.png",     alt: "Pastry chef adding final garnish to plated dessert",      label: "Dessert Detail",     group: "Behind the Scenes" },
+    { src: "/gallery_img/Floral-Arrangement-Prep.png",     alt: "Staff arranging floral centerpiece in sunlit dining hall", label: "Table Prep",        group: "Behind the Scenes" },
 
-// SPECIAL EVENTS
-{
-  src: "/gallery_img/Formal-Private-Dinner Event.png",
-  alt: "Formal private dinner event in bright luxury European dining hall",
-  label: "Special Events"
-},
-{
-  src: "/gallery_img/Wedding-Reception.png",
-  alt: "Elegant daytime wedding reception in chandelier-lit restaurant",
-  label: "Special Events"
-},
-{
-  src: "/gallery_img/Wine-Pairing-Event.png",
-  alt: "Afternoon wine pairing event in bright upscale restaurant",
-  label: "Special Events"
-},
-
-// BEHIND THE SCENES
-{
-  src: "/gallery_img/Chef-Plating-in-Elegant-Kitchen.png",
-  alt: "Chef carefully plating gourmet dish in bright professional kitchen",
-  label: "Behind the Scenes"
-},
-{
-  src: "/gallery_img/Dessert-Finishing-Touch.png",
-  alt: "Pastry chef adding final garnish to plated dessert",
-  label: "Behind the Scenes"
-},
-{
-  src: "/gallery_img/Floral-Arrangement-Prep.png",
-  alt: "Staff arranging floral centerpiece in sunlit luxury dining hall",
-  label: "Behind the Scenes"
-}
-  
+    { src: "/gallery-ribeye-steak.webp",                   alt: "Signature ribeye steak, beautifully plated",              label: "Ribeye Steak",       group: "Cuisine" },
+    { src: "/Menu_img/mains_img/Grilled-Salmon.png",       alt: "Grilled salmon with seasonal vegetables",                 label: "Grilled Salmon",     group: "Cuisine" },
+    { src: "/Menu_img/desserts_img/Tiramisu.png",          alt: "Classic tiramisu",                                         label: "Tiramisu",           group: "Cuisine" },
+    { src: "/Menu_img/desserts_img/Cheesecake.png",        alt: "Cheesecake with berry compote",                           label: "Cheesecake",         group: "Cuisine" },
 ];
+
+const GROUPS = ["All", ...Array.from(new Set(IMAGES.map(img => img.group)))];
 
 export default function Gallery() {
     const [idx, setIdx] = useState(null);
+    const [activeGroup, setActiveGroup] = useState("All");
 
-    const prev = useCallback(() => setIdx(i => (i - 1 + IMAGES.length) % IMAGES.length), []);
-    const next = useCallback(() => setIdx(i => (i + 1) % IMAGES.length), []);
+    const filtered = activeGroup === "All" ? IMAGES : IMAGES.filter(img => img.group === activeGroup);
+
+    const prev = useCallback(() => setIdx(i => (i - 1 + filtered.length) % filtered.length), [filtered.length]);
+    const next = useCallback(() => setIdx(i => (i + 1) % filtered.length), [filtered.length]);
     const close = () => setIdx(null);
 
     useEffect(() => {
@@ -87,19 +44,46 @@ export default function Gallery() {
         return () => { window.removeEventListener("keydown", fn); document.body.style.overflow = ""; };
     }, [idx, prev, next]);
 
+    const handleGroupChange = (group) => {
+        setIdx(null);
+        setActiveGroup(group);
+    };
+
     return (
-        <main id="main">
+        <main id="main" className="has-hero">
+            {/* Page hero */}
+            <div className="page-hero" aria-hidden="true">
+                <div
+                    className="page-hero-bg"
+                    style={{ backgroundImage: "url('/gallery_img/Chandelier-Ceiling-Detail.png')" }}
+                />
+                <div className="page-hero-overlay" />
+                <div className="page-hero-content">
+                    <span className="page-hero-eyebrow">Gallery</span>
+                    <h1 className="page-hero-title">A Glimpse Inside</h1>
+                </div>
+            </div>
+
             <div className="page-container">
-                <div className="sec-head centered">
-                    <span className="eyebrow">Gallery</span>
-                    <h1>A Glimpse Inside</h1>
-                    <span className="sec-rule" />
+
+                {/* Category filter tabs */}
+                <div className="menu-tabs" role="tablist" aria-label="Gallery categories" style={{ marginBottom: "32px" }}>
+                    {GROUPS.map(g => (
+                        <button
+                            key={g}
+                            role="tab"
+                            className={`menu-tab${activeGroup === g ? " active" : ""}`}
+                            aria-selected={activeGroup === g}
+                            onClick={() => handleGroupChange(g)}
+                        >
+                            {g}
+                        </button>
+                    ))}
                 </div>
 
                 <div className="gallery-sec">
-                    <h2>Our Space &amp; Cuisine</h2>
                     <div className="gallery-grid">
-                        {IMAGES.map((img, i) => (
+                        {filtered.map((img, i) => (
                             <button
                                 key={img.src}
                                 className="gallery-thumb"
@@ -138,7 +122,7 @@ export default function Gallery() {
                 <div className="lb-backdrop" onClick={close} role="dialog" aria-modal="true" aria-label="Image lightbox">
                     <div className="lb-wrap" onClick={e => e.stopPropagation()}>
                         <button className="lb-close" onClick={close} aria-label="Close">✕</button>
-                        <img src={IMAGES[idx].src} alt={IMAGES[idx].alt} />
+                        <img src={filtered[idx].src} alt={filtered[idx].alt} />
                         <button className="lb-btn lb-prev" onClick={prev} aria-label="Previous">‹</button>
                         <button className="lb-btn lb-next" onClick={next} aria-label="Next">›</button>
                     </div>

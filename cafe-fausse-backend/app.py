@@ -1,10 +1,8 @@
-import re
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 import os
+from flask import Flask, jsonify, request
+from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 from dotenv import load_dotenv
-from datetime import date, datetime, time, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from services.reservation_services import old_reservations
 from extensions import db
@@ -19,9 +17,11 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
 
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    jwt = JWTManager(app)
 
     db.init_app(app)
 

@@ -58,8 +58,10 @@ export async function createReservation(customerId, date, time, guestCount) {
   return handleResponse(response, data);
 }
 
-export async function getAvailability(date) {
-  const response = await apiFetch(`/availability?date=${date}`);
+export async function getAvailability(date, customerId=null) {
+  const params = new URLSearchParams({date});
+  if (customerId) params.append("customer_id", customerId);
+  const response = await apiFetch(`/availability?${params.toString()}`);
   const data = await response.json();
   return handleResponse(response, data);
 }

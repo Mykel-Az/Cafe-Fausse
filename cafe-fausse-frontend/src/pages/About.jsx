@@ -2,14 +2,21 @@ import React from "react";
 
 export default function About() {
     return (
-        <main id="main">
-            <div className="page-container">
-                <div className="sec-head">
-                    <span className="eyebrow">Our Story</span>
-                    <h1>About Café Fausse</h1>
-                    <span className="sec-rule" />
+        <main id="main" className="has-hero">
+            {/* Page hero */}
+            <div className="page-hero" aria-hidden="true">
+                <div
+                    className="page-hero-bg"
+                    style={{ backgroundImage: "url('/gallery_img/Chef-Plating-in-Elegant-Kitchen.png')" }}
+                />
+                <div className="page-hero-overlay" />
+                <div className="page-hero-content">
+                    <span className="page-hero-eyebrow">Our Story</span>
+                    <h1 className="page-hero-title">About Café Fausse</h1>
                 </div>
+            </div>
 
+            <div className="page-container">
                 <div className="about-intro fade-in visible">
                     <p>
                         Founded in 2010 by Chef Antonio Rossi and restaurateur Maria Lopez,

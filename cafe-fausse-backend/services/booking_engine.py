@@ -90,12 +90,7 @@ def validate_reservation_request(customer_id, requested_time, guest_count):
     
     if not within_working_hours(requested_time):
         return False, "We're closed at that time. Please select within business hours."
-    
-    # if customer_id:
-    #     dupllicate_reservation = Reservation.query.filter(Reservation.customer_id == customer_id, Reservation.status == 'active', Reservation.reservation_time_slot == requested_time).first()
-    #     if dupllicate_reservation:
-    #         return False, 'You already have a reservation at that time. Please select a different time slot.'
-    
+  
     if customer_id:
         if not check_same_day_reservation(customer_id, requested_time):
             return False, "You already have a reservation for this day. Only one reservation per day is allowed."

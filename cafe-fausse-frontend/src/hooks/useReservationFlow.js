@@ -27,7 +27,8 @@ export function useReservationFlow() {
     const [customerId, setCustomerId] = useState(null);
     const [isExistingCustomer, setIsExistingCustomer] = useState(false);
     const [completeProfile, setCompleteProfile] = useState(false);
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState("");         
+    const [dateError, setDateError] = useState("");     
     const [availableSlots, setAvailableSlots] = useState([]);
     const [fullyBookedSlots, setFullyBookedSlots] = useState([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
@@ -42,6 +43,15 @@ export function useReservationFlow() {
             ...fullyBookedSlots.map(slot => ({ time: slot, available: false }))
         ].sort((a, b) => a.time.localeCompare(b.time));
     }, [availableSlots, fullyBookedSlots]);
+
+    const canSubmit = !!(
+        formData.date &&
+        formData.time &&
+        formData.guests &&
+        !dateError &&
+        !loadingSlots &&
+        (isExistingCustomer && completeProfile ? true : formData.name)
+    );
 
     function handleChange(e) {
         setFormData(prev => ({
@@ -62,21 +72,39 @@ export function useReservationFlow() {
         setAvailableSlots([]);
         setFullyBookedSlots([]);
         setMessage("");
+        setDateError("");
         setEditingReservationId(null);
     }
 
-    async function fetchAvailability(date) {
+    function handleBack() {
+        setStep(1);
+        setMessage("");
+        setDateError("");
+        setCustomerId(null);
+        setIsExistingCustomer(false);
+        setCompleteProfile(false);
+        setAvailableSlots([]);
+        setFullyBookedSlots([]);
+        setFormData(prev => ({
+            ...initialFormState,
+            email: prev.email,
+        }));
+    }
+
+    async function fetchAvailability(date, id = customerId) {
         if (!date) return;
 
         setLoadingSlots(true);
-        setMessage("");
+        setDateError("");
+        setAvailableSlots([]);
+        setFullyBookedSlots([]);
 
         try {
-            const data = await getAvailability(date);
+            const data = await getAvailability(date, id);
             setAvailableSlots(data.time_slots.available_slots);
             setFullyBookedSlots(data.time_slots.fully_booked_slots);
         } catch (error) {
-            setMessage(error.message || "An error occurred while fetching available time slots.");
+            setDateError(error.message || "Could not load availability for this date.");
         } finally {
             setLoadingSlots(false);
         }
@@ -87,18 +115,16 @@ export function useReservationFlow() {
         const time = reservation.time_slot.split("T")[1].slice(0, 5);
 
         setEditingReservationId(reservation.id);
-
         setFormData(prev => ({
             ...prev,
             guests: reservation.guest_count,
             date,
             time
         }));
-
         setShowReservationOptions(false);
         setStep(2);
 
-        await fetchAvailability(date);
+        await fetchAvailability(date, customerId);
     }
 
     async function handleEmailCheck(e) {
@@ -152,6 +178,8 @@ export function useReservationFlow() {
     async function handleSubmit(e) {
         e.preventDefault();
         setMessage("");
+
+        if (!canSubmit) return;
 
         let id = customerId;
 
@@ -222,14 +250,17 @@ export function useReservationFlow() {
         isExistingCustomer,
         completeProfile,
         message,
+        dateError,
         loadingSlots,
         confirmation,
         activeReservations,
         showReservationOptions,
         allSlots,
+        canSubmit,
         editingReservationId,
 
         handleChange,
+        handleBack,
         handleEmailCheck,
         handleDateChange,
         handleSubmit,

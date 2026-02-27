@@ -3,10 +3,9 @@ from models import Customer
 from services.customer_service import create_customer, get_customer_by_email, update_customer_profile, get_all_customers
 from services.utility_services import is_valid_email
 
-# Tested and all works so far, will add more routes as needed
 
 customer_bp = Blueprint('customer_bp', __name__)
-@customer_bp.route('/customers/check', methods=['POST']) #tested
+@customer_bp.route('/customers/check', methods=['POST']) 
 def check_customer():
     data = request.get_json()
     email = data.get('email')

@@ -11,16 +11,12 @@ export default function Navbar() {
     useEffect(() => {
         const fn = () => setScrolled(window.scrollY > 50);
         window.addEventListener("scroll", fn, { passive: true });
-        // Set initial state on mount/route change
         fn();
         return () => window.removeEventListener("scroll", fn);
     }, [pathname]);
 
     const close = () => setOpen(false);
 
-    // Navbar is "dark" (light text) when:
-    // - on home page and NOT scrolled yet (sitting over the dark hero image)
-    // Otherwise it's "light" (dark text on pale surface)
     const isDark = isHome && !scrolled;
 
     return (
