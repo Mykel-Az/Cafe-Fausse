@@ -1,21 +1,24 @@
-import random
-from models import Reservation, Customer
+import random, logging
+from models import Reservation
 from extensions import db
 from datetime import datetime, timedelta, time
 from config import BLOCKING_HOURS, TOTAL_TABLES, MIN_PARTY_SIZE, MAX_PARTY_SIZE, MIN_ADVANCE_HOURS, MAX_ADVANCE_DAYS
+
+logger = logging.getLogger(__name__)
 
 
 def check_same_day_reservation(customer_id, requested_time_slot=None, requested_date=None):
     """Check if a customer already has an active reservation on the given date."""
     requested_date = requested_time_slot.date() if requested_time_slot else requested_date
 
-    existing_reservation_same_day = Reservation.query.filter(
+    existing = Reservation.query.filter(
         Reservation.customer_id == customer_id,
         Reservation.status == 'active',
         db.func.date(Reservation.reservation_time_slot) == requested_date
     ).first()
 
-    if existing_reservation_same_day:
+    if existing:
+        logger.info(f'Customer {customer_id} already has a reservation on {requested_date}')
         return False
     return True
 
@@ -24,11 +27,7 @@ def within_working_hours(time_slot):
     """Check if a time slot falls within opening hours (Mon–Sat 5PM–11PM, Sun 5PM–9PM)."""
     day_of_week = time_slot.weekday()
     opening_time = time(17, 0)
-
-    if day_of_week == 6:
-        closing_time = time(21, 0)
-    else:
-        closing_time = time(23, 0)
+    closing_time = time(21, 0) if day_of_week == 6 else time(23, 0)
 
     reservation_date = time_slot.date()
     opening_datetime = datetime.combine(reservation_date, opening_time)
@@ -36,28 +35,30 @@ def within_working_hours(time_slot):
     reservation_end = time_slot + timedelta(hours=BLOCKING_HOURS)
 
     if time_slot < opening_datetime or reservation_end > closing_datetime:
+        logger.info(f'Time slot {time_slot} is outside working hours')
         return False
     return True
 
 
 def assign_available_table(requested_time):
     """Randomly assign an available table for the requested time slot. Returns None if fully booked."""
-
     requested_end = requested_time + timedelta(hours=BLOCKING_HOURS)
     table_numbers = list(range(1, TOTAL_TABLES + 1))
     random.shuffle(table_numbers)
 
     for table_number in table_numbers:
-        overlapping_reservation = Reservation.query.filter(
+        overlapping = Reservation.query.filter(
             Reservation.table_number == table_number,
             Reservation.status == 'active',
             Reservation.reservation_time_slot < requested_end,
             Reservation.reservation_time_slot >= requested_time - timedelta(hours=BLOCKING_HOURS)
         ).first()
 
-        if not overlapping_reservation:
+        if not overlapping:
+            logger.info(f'Assigned table {table_number} for time slot {requested_time}')
             return table_number
 
+    logger.warning(f'No tables available for time slot {requested_time}')
     return None
 
 
@@ -88,18 +89,15 @@ def validate_reservation_request(customer_id, requested_time, guest_count):
         if not check_same_day_reservation(customer_id, requested_time):
             return False, "You already have a reservation for this day. Only one reservation per day is allowed."
 
+    logger.info(f'Reservation request validated — customer: {customer_id}, time: {requested_time}, guests: {guest_count}')
     return True, None
 
 
 def generate_time_slots(selected_date):
     """Generate all 30-minute time slots for a given date based on opening hours."""
     weekday = selected_date.weekday()
-    if weekday == 6:
-        opening_time = time(17, 0)
-        closing_time = time(21, 0)
-    else:
-        opening_time = time(17, 0)
-        closing_time = time(23, 0)
+    opening_time = time(17, 0)
+    closing_time = time(21, 0) if weekday == 6 else time(23, 0)
 
     time_slots = []
     current_time = datetime.combine(selected_date, opening_time)
@@ -132,6 +130,7 @@ def get_available_time_slots(selected_date):
         else:
             fully_booked_slots.append(time_slot.strftime('%H:%M'))
 
+    logger.info(f'Availability check for {selected_date} — available: {len(available_time_slots)}, fully booked: {len(fully_booked_slots)}')
     return {
         "available_slots": available_time_slots,
         "fully_booked_slots": fully_booked_slots

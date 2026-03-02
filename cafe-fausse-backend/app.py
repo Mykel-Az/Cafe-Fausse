@@ -1,5 +1,5 @@
-import os, atexit
-from flask import Flask, jsonify, request
+import os, atexit, logging
+from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -12,6 +12,14 @@ from routes.admin_routes import staff_bp
 from routes.newsletter_routes import newsletter_bp
 
 load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
 
 def create_app():
     app = Flask(__name__)
@@ -32,19 +40,24 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        logger.info('Database tables verified or created')
 
+    logger.info('App created and blueprints registered')
     return app
 
 app = create_app()
 
 def run_old_reservations_job():
+    logger.info('Scheduler: running old_reservations job')
     with app.app_context():
         old_reservations()
+    logger.info('Scheduler: old_reservations job complete')
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=run_old_reservations_job, trigger="interval", minutes=30)
 if not app.debug or os.getenv('WERKZEUG_RUN_MAIN') == 'true':
     scheduler.start()
+    logger.info('Scheduler started — running every 30 minutes')
     atexit.register(lambda: scheduler.shutdown(wait=False))
 
 if __name__ == '__main__':
