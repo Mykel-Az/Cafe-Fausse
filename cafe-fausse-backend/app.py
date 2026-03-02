@@ -10,6 +10,7 @@ from routes.reservation_routes import reservation_bp
 from routes.customer_routes import customer_bp
 from routes.admin_routes import staff_bp
 from routes.newsletter_routes import newsletter_bp
+from routes.health_routes import health_bp
 
 load_dotenv()
 
@@ -37,6 +38,7 @@ def create_app():
     app.register_blueprint(customer_bp)
     app.register_blueprint(staff_bp)
     app.register_blueprint(newsletter_bp)
+    app.register_blueprint(health_bp)
 
     with app.app_context():
         db.create_all()
