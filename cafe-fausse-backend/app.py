@@ -31,7 +31,6 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     jwt = JWTManager(app)
-
     db.init_app(app)
 
     app.register_blueprint(reservation_bp)
@@ -42,18 +41,21 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-        logger.info('Database tables verified or created')
+        logger.info('Database tables verified/created')
 
     logger.info('App created and blueprints registered')
     return app
 
+
 app = create_app()
+
 
 def run_old_reservations_job():
     logger.info('Scheduler: running old_reservations job')
     with app.app_context():
         old_reservations()
     logger.info('Scheduler: old_reservations job complete')
+
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=run_old_reservations_job, trigger="interval", minutes=30)
@@ -64,9 +66,3 @@ if not app.debug or os.getenv('WERKZEUG_RUN_MAIN') == 'true':
 
 if __name__ == '__main__':
     app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
-
-
-
-
-
-
