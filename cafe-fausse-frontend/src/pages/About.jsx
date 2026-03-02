@@ -7,7 +7,7 @@ export default function About() {
             <div className="page-hero" aria-hidden="true">
                 <div
                     className="page-hero-bg"
-                    style={{ backgroundImage: "url('/gallery_img/Chef-Plating-in-Elegant-Kitchen.png')" }}
+                    style={{ backgroundImage: "url('/src/assets/images/gallery_img/Chef-Plating-in-Elegant-Kitchen.png')" }}
                 />
                 <div className="page-hero-overlay" />
                 <div className="page-hero-content">

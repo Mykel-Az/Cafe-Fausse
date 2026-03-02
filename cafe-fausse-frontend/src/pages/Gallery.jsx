@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 const IMAGES = [
-    { src: "/gallery_img/Grand-Dining-Hall.png",          alt: "Bright luxury grand dining hall with chandeliers",         label: "Interior Ambiance",  group: "Interior Ambiance" },
-    { src: "/gallery_img/Chandelier-Ceiling-Detail.png",  alt: "Crystal chandelier hanging from ornate carved ceiling",    label: "Chandelier Detail",  group: "Interior Ambiance" },
-    { src: "/gallery-cafe-interior.webp",                  alt: "Elegant dining room",                                      label: "Dining Room",        group: "Interior Ambiance" },
+    { src: "/src/assets/images/gallery_img/Grand-Dining-Hall.png",          alt: "Bright luxury grand dining hall with chandeliers",         label: "Interior Ambiance",  group: "Interior Ambiance" },
+    { src: "/src/assets/images/gallery_img/Chandelier-Ceiling-Detail.png",  alt: "Crystal chandelier hanging from ornate carved ceiling",    label: "Chandelier Detail",  group: "Interior Ambiance" },
+    { src: "/src/assets/images/gallery-cafe-interior.webp",                  alt: "Elegant dining room",                                      label: "Dining Room",        group: "Interior Ambiance" },
 
-    { src: "/gallery_img/Formal-Private-Dinner Event.png", alt: "Formal private dinner event in luxury hall",              label: "Private Dinner",     group: "Special Events" },
-    { src: "/gallery_img/Wedding-Reception.png",           alt: "Elegant daytime wedding reception",                        label: "Wedding Reception",  group: "Special Events" },
-    { src: "/gallery_img/Wine-Pairing-Event.png",          alt: "Afternoon wine pairing event",                             label: "Wine Pairing",       group: "Special Events" },
-    { src: "/gallery-special-event.webp",                  alt: "Special event evening at Café Fausse",                    label: "Special Event",      group: "Special Events" },
+    { src: "/src/assets/images/gallery_img/Formal-Private-Dinner Event.png", alt: "Formal private dinner event in luxury hall",              label: "Private Dinner",     group: "Special Events" },
+    { src: "/src/assets/images/gallery_img/Wedding-Reception.png",           alt: "Elegant daytime wedding reception",                        label: "Wedding Reception",  group: "Special Events" },
+    { src: "/src/assets/images/gallery_img/Wine-Pairing-Event.png",          alt: "Afternoon wine pairing event",                             label: "Wine Pairing",       group: "Special Events" },
+    { src: "/src/assets/images/gallery-special-event.webp",                  alt: "Special event evening at Café Fausse",                    label: "Special Event",      group: "Special Events" },
 
-    { src: "/gallery_img/Chef-Plating-in-Elegant-Kitchen.png", alt: "Chef carefully plating gourmet dish",                 label: "Chef at Work",       group: "Behind the Scenes" },
-    { src: "/gallery_img/Dessert-Finishing-Touch.png",     alt: "Pastry chef adding final garnish to plated dessert",      label: "Dessert Detail",     group: "Behind the Scenes" },
-    { src: "/gallery_img/Floral-Arrangement-Prep.png",     alt: "Staff arranging floral centerpiece in sunlit dining hall", label: "Table Prep",        group: "Behind the Scenes" },
+    { src: "/src/assets/images/gallery_img/Chef-Plating-in-Elegant-Kitchen.png", alt: "Chef carefully plating gourmet dish",                 label: "Chef at Work",       group: "Behind the Scenes" },
+    { src: "/src/assets/images/gallery_img/Dessert-Finishing-Touch.png",     alt: "Pastry chef adding final garnish to plated dessert",      label: "Dessert Detail",     group: "Behind the Scenes" },
+    { src: "/src/assets/images/gallery_img/Floral-Arrangement-Prep.png",     alt: "Staff arranging floral centerpiece in sunlit dining hall", label: "Table Prep",        group: "Behind the Scenes" },
 
-    { src: "/gallery-ribeye-steak.webp",                   alt: "Signature ribeye steak, beautifully plated",              label: "Ribeye Steak",       group: "Cuisine" },
-    { src: "/Menu_img/mains_img/Grilled-Salmon.png",       alt: "Grilled salmon with seasonal vegetables",                 label: "Grilled Salmon",     group: "Cuisine" },
-    { src: "/Menu_img/desserts_img/Tiramisu.png",          alt: "Classic tiramisu",                                         label: "Tiramisu",           group: "Cuisine" },
-    { src: "/Menu_img/desserts_img/Cheesecake.png",        alt: "Cheesecake with berry compote",                           label: "Cheesecake",         group: "Cuisine" },
+    { src: "/src/assets/images/gallery-ribeye-steak.webp",                   alt: "Signature ribeye steak, beautifully plated",              label: "Ribeye Steak",       group: "Cuisine" },
+    { src: "/src/assets/images/Menu_img/mains_img/Grilled-Salmon.png",       alt: "Grilled salmon with seasonal vegetables",                 label: "Grilled Salmon",     group: "Cuisine" },
+    { src: "/src/assets/images/Menu_img/desserts_img/Tiramisu.png",          alt: "Classic tiramisu",                                         label: "Tiramisu",           group: "Cuisine" },
+    { src: "/src/assets/images/Menu_img/desserts_img/Cheesecake.png",        alt: "Cheesecake with berry compote",                           label: "Cheesecake",         group: "Cuisine" },
 ];
 
 const GROUPS = ["All", ...Array.from(new Set(IMAGES.map(img => img.group)))];
@@ -55,7 +55,7 @@ export default function Gallery() {
             <div className="page-hero" aria-hidden="true">
                 <div
                     className="page-hero-bg"
-                    style={{ backgroundImage: "url('/gallery_img/Chandelier-Ceiling-Detail.png')" }}
+                    style={{ backgroundImage: "url('/src/assets/images/gallery_img/Chandelier-Ceiling-Detail.png')" }}
                 />
                 <div className="page-hero-overlay" />
                 <div className="page-hero-content">

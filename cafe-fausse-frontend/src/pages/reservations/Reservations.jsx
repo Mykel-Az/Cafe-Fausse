@@ -68,7 +68,7 @@ export default function Reservations() {
             <div className="page-hero" aria-hidden="true">
                 <div
                     className="page-hero-bg"
-                    style={{ backgroundImage: "url('/gallery_img/Formal-Private-Dinner Event.png')" }}
+                    style={{ backgroundImage: "url('/src/assets/images/gallery_img/Formal-Private-Dinner Event.png')" }}
                 />
                 <div className="page-hero-overlay" />
                 <div className="page-hero-content">

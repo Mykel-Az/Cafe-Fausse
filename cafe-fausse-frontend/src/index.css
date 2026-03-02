@@ -180,7 +180,7 @@ button { font-family: var(--ff-body); cursor: pointer; }
 }
 .hero-bg {
   position: absolute; inset: 0;
-  background-image: url('/home-cafe-fausse.webp');
+  background-image: url('/src/assets/images/home-cafe-fausse.webp');
   background-size: cover; background-position: center;
 }
 .hero-overlay {
