@@ -1,4 +1,4 @@
-export default function EmailStep({ email, onChange, onSubmit }) {
+export default function EmailStep({ email, onChange, onSubmit, loading = false }) {
     return (
         <form className="res-form" onSubmit={onSubmit} noValidate>
             <div className="field">
@@ -17,7 +17,13 @@ export default function EmailStep({ email, onChange, onSubmit }) {
                     We'll use this to look up or create your account
                 </span>
             </div>
-            <button type="submit" className="res-submit">Continue →</button>
+            <button
+                type="submit"
+                className={`res-submit${loading ? " disabled" : ""}`}
+                disabled={loading}
+            >
+                {loading ? "Checking…" : "Continue →"}
+            </button>
         </form>
     );
 }

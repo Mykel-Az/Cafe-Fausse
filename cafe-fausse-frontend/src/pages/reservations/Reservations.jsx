@@ -64,6 +64,7 @@ export default function Reservations() {
     showReservationOptions,
     allSlots,
     canSubmit,
+    loadingEmail,
 
     handleChange,
     handleBack,
@@ -109,6 +110,7 @@ export default function Reservations() {
                   email={formData.email}
                   onChange={handleChange}
                   onSubmit={handleEmailCheck}
+                  loading={loadingEmail}
                 />
               )}
 
