@@ -1,4 +1,4 @@
-const GUEST_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const GUEST_OPTIONS = [1, 2, 3, 4, 5];
 
 export default function CustomerDetailsForm({
     formData,
@@ -136,7 +136,7 @@ export default function CustomerDetailsForm({
                                 ))}
                             </div>
                             <span className="field-hint">
-                                Strikethrough slots are fully booked — each reservation blocks 1 hours
+                                Strikethrough slots are fully booked — each reservation blocks 2 hours
                             </span>
                         </>
                     )}
@@ -162,26 +162,12 @@ export default function CustomerDetailsForm({
                                 {num}
                             </button>
                         ))}
-                        <button
-                            type="button"
-                            className={[
-                                "guest-btn guest-btn-wide",
-                                Number(formData.guests) > 10 ? "selected" : ""
-                            ].filter(Boolean).join(" ")}
-                            onClick={() => {
-                                const n = window.prompt("Enter number of guests (max 30):");
-                                if (n && !isNaN(n)) selectGuests(Number(n));
-                            }}
-                            aria-label="More than 10 guests"
-                        >
-                            10+
-                        </button>
+
                     </div>
-                    <span className="field-hint">Maximum 10 guests — call us for larger groups</span>
+                    <span className="field-hint">Maximum 5 guests — call us for larger groups</span>
                 </div>
             )}
 
-           
             <div className="res-form-actions">
                 <button
                     type="button"

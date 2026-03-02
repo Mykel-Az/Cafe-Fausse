@@ -48,7 +48,7 @@ if not app.debug or os.getenv('WERKZEUG_RUN_MAIN') == 'true':
     atexit.register(lambda: scheduler.shutdown(wait=False))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
 
 
 
