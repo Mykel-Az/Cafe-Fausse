@@ -43,12 +43,10 @@ export async function login(username, password) {
 }
 export function logout() { clearToken(); }
 
-// Dashboard
 export async function getDashboard() {
     return handleResponse(await authFetch('/admin/dashboard'));
 }
 
-// Reservations — params: { date, status, checked_in, upcoming, search, page, per_page }
 export async function getReservations(params = {}) {
     const qs = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => {
@@ -70,7 +68,6 @@ export async function markNoShow(id) {
     return handleResponse(await authFetch(`/staff/reservations/${id}/mark-no-show`, { method: 'POST' }));
 }
 
-// Customers
 export async function getCustomers(filter = '') {
     const qs = filter ? `?filter=${filter}` : '';
     return handleResponse(await authFetch(`/admin/customers${qs}`));

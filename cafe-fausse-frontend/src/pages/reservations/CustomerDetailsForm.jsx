@@ -136,7 +136,7 @@ export default function CustomerDetailsForm({
                                 ))}
                             </div>
                             <span className="field-hint">
-                                Strikethrough slots are fully booked — each reservation blocks 2 hours
+                                Strikethrough slots are fully booked — each reservation blocks 1 hours
                             </span>
                         </>
                     )}

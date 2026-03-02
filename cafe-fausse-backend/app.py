@@ -1,4 +1,4 @@
-import os
+import os, atexit
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -45,6 +45,7 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(func=run_old_reservations_job, trigger="interval", minutes=30)
 if not app.debug or os.getenv('WERKZEUG_RUN_MAIN') == 'true':
     scheduler.start()
+    atexit.register(lambda: scheduler.shutdown(wait=False))
 
 if __name__ == '__main__':
     app.run(debug=True)
