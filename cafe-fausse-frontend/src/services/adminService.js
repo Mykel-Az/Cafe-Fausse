@@ -6,7 +6,7 @@ export function getToken()    { return _token; }
 export function clearToken()  { _token = null; }
 export function isLoggedIn()  { return !!_token; }
 
-const BASE = 'http://localhost:5000';
+const BASE = import.meta.env.VITE_API_URL;
 
 async function apiFetch(endpoint, options = {}) {
     return fetch(`${BASE}${endpoint}`, {
@@ -31,12 +31,13 @@ async function handleResponse(res) {
     return data;
 }
 
-// Auth
+
 export async function login(username, password) {
     const res = await apiFetch('/staff/login', {
         method: 'POST',
         body: JSON.stringify({ username, password }),
     });
+    // console.log(`username:${username}, password:${password}`)
     const data = await handleResponse(res);
     setToken(data.access_token);
     return data;
