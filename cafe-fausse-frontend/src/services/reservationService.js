@@ -12,7 +12,6 @@ export async function checkCustomer(email) {
     method: "POST",
     body: JSON.stringify({ email }),
   });
-
   const data = await response.json();
   return handleResponse(response, data);
 }
@@ -28,7 +27,6 @@ export async function createCustomer(name, email, phone) {
     method: "POST",
     body: JSON.stringify({ name, email, phone }),
   });
-
   const data = await response.json();
   return handleResponse(response, data);
 }
@@ -38,7 +36,6 @@ export async function updateCustomer(id, name, phone) {
     method: "PUT",
     body: JSON.stringify({ name, phone }),
   });
-
   const data = await response.json();
   return handleResponse(response, data);
 }
@@ -53,14 +50,15 @@ export async function createReservation(customerId, date, time, guestCount) {
       guest_count: guestCount,
     }),
   });
-
   const data = await response.json();
   return handleResponse(response, data);
 }
 
-export async function getAvailability(date, customerId=null) {
-  const params = new URLSearchParams({date});
+export async function getAvailability(date, customerId = null, reservationId = null) {
+  const params = new URLSearchParams({ date });
   if (customerId) params.append("customer_id", customerId);
+  if (reservationId) params.append("reservation_id", reservationId);
+
   const response = await apiFetch(`/availability?${params.toString()}`);
   const data = await response.json();
   return handleResponse(response, data);
@@ -76,21 +74,19 @@ export async function cancelReservationById(id) {
   const response = await apiFetch(`/reservations/${id}/cancel`, {
     method: "DELETE",
   });
-
   const data = await response.json();
   return handleResponse(response, data);
 }
 
 export async function updateReservation(id, date, time, guestCount) {
-    const response = await apiFetch(`/reservations/${id}/update`, {
-        method: "PUT",
-        body: JSON.stringify({
-            date,
-            time,
-            guest_count: guestCount
-        })
-    });
-
-    const data = await response.json();
-    return handleResponse(response, data);
+  const response = await apiFetch(`/reservations/${id}/update`, {
+    method: "PUT",
+    body: JSON.stringify({
+      date,
+      time,
+      guest_count: guestCount,
+    }),
+  });
+  const data = await response.json();
+  return handleResponse(response, data);
 }

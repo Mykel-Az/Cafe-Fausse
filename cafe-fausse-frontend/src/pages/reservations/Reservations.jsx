@@ -1,3 +1,4 @@
+import { useState } from "react";
 import ActiveReservations from "./ActiveReservation";
 import ReservationConfirmation from "./ReservationConfirmation";
 import EmailStep from "./EmailStep";
@@ -9,40 +10,22 @@ function StepIndicator({ step }) {
   return (
     <div className="res-steps" aria-label="Reservation progress">
       {steps.map((label, i) => {
-        const num = i + 1;
+        const num    = i + 1;
         const active = num === step;
-        const done = num < step;
+        const done   = num < step;
         return (
           <div key={label} className="res-step-item">
-            <div
-              className={`res-step-circle${active ? " active" : done ? " done" : ""}`}
-            >
+            <div className={`res-step-circle${active ? " active" : done ? " done" : ""}`}>
               {done ? (
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M2 6l3 3 5-5"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8"
+                    strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              ) : (
-                <span>{num}</span>
-              )}
+              ) : <span>{num}</span>}
             </div>
-            <span className={`res-step-label${active ? " active" : ""}`}>
-              {label}
-            </span>
-            {i < steps.length - 1 && (
-              <div className={`res-step-line${done ? " done" : ""}`} />
-            )}
+            {/* Always show active label; show others only on wider screens via CSS */}
+            <span className={`res-step-label${active ? " active always-show" : ""}`}>{label}</span>
+            {i < steps.length - 1 && <div className={`res-step-line${done ? " done" : ""}`} />}
           </div>
         );
       })}
@@ -65,6 +48,8 @@ export default function Reservations() {
     allSlots,
     canSubmit,
     loadingEmail,
+    selectedReservation,
+    editingReservationId,
 
     handleChange,
     handleBack,
@@ -74,24 +59,22 @@ export default function Reservations() {
     openReservation,
     cancelReservation,
     handleNewReservation,
+    goToReservations,
     setStep,
     setShowReservationOptions,
     startEditing,
   } = useReservationFlow();
 
+  const [showEditProfile, setShowEditProfile] = useState(false);
   const showStepper = !confirmation && !showReservationOptions;
+
+
 
   return (
     <main id="main" className="has-hero">
-      {/* Page hero */}
       <div className="page-hero" aria-hidden="true">
-        <div
-          className="page-hero-bg"
-          style={{
-            backgroundImage:
-              "url('/gallery_img/Formal-Private-Dinner Event.png')",
-          }}
-        />
+        <div className="page-hero-bg"
+          style={{ backgroundImage: "url('/gallery_img/Formal-Private-Dinner Event.png')" }} />
         <div className="page-hero-overlay" />
         <div className="page-hero-content">
           <span className="page-hero-eyebrow">Dining</span>
@@ -103,59 +86,96 @@ export default function Reservations() {
         <div className="res-page">
           {showStepper && <StepIndicator step={step} />}
 
-          {!confirmation && !showReservationOptions && (
-            <>
-              {step === 1 && (
-                <EmailStep
-                  email={formData.email}
-                  onChange={handleChange}
-                  onSubmit={handleEmailCheck}
-                  loading={loadingEmail}
-                />
-              )}
-
-              {step === 2 && (
-                <CustomerDetailsForm
-                  formData={formData}
-                  isExistingCustomer={isExistingCustomer}
-                  completeProfile={completeProfile}
-                  handleChange={handleChange}
-                  handleDateChange={handleDateChange}
-                  handleSubmit={handleSubmit}
-                  handleBack={handleBack}
-                  loadingSlots={loadingSlots}
-                  allSlots={allSlots}
-                  dateError={dateError}
-                  canSubmit={canSubmit}
-                />
-              )}
-            </>
-          )}
-
-          {showReservationOptions && (
-            <ActiveReservations
-              activeReservations={activeReservations}
-              openReservation={openReservation}
-              cancelReservation={cancelReservation}
-              startEditing={startEditing}
-              onCreateNew={() => {
-                setShowReservationOptions(false);
-                setStep(2);
-              }}
+          {/* Step 1 */}
+          {!confirmation && !showReservationOptions && step === 1 && (
+            <EmailStep
+              email={formData.email}
+              onChange={handleChange}
+              onSubmit={handleEmailCheck}
+              loading={loadingEmail}
             />
           )}
 
-          {confirmation && (
+          {/* Step 2 */}
+          {!confirmation && !showReservationOptions && step === 2 && (
+            <>
+              {/* Update details bar — only for returning complete-profile customers on a NEW reservation */}
+              {isExistingCustomer && completeProfile && !editingReservationId && (
+                <div className="res-edit-profile-bar">
+                  <div className="res-edit-profile-bar-left">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span className="res-edit-profile-hint">
+                      Welcome back — your details are on file.
+                    </span>
+                  </div>
+                  <button type="button" className="res-edit-profile-btn"
+                    onClick={() => setShowEditProfile(v => !v)}>
+                    {showEditProfile ? "Hide" : "Update Details"}
+                  </button>
+                </div>
+              )}
+
+              {isExistingCustomer && completeProfile && !editingReservationId && showEditProfile && (
+                <div className="res-edit-profile-form">
+                  <p className="res-edit-profile-onfile">
+                    Editing below will update your saved details when you confirm this reservation.
+                  </p>
+                  <div className="field">
+                    <label htmlFor="ep-name">Full Name</label>
+                    <input id="ep-name" type="text" name="name" value={formData.name}
+                      onChange={handleChange} autoComplete="name" placeholder="Your full name" />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="ep-phone">Phone Number</label>
+                    <input id="ep-phone" type="tel" name="phone" value={formData.phone}
+                      onChange={handleChange} autoComplete="tel" placeholder="e.g. (202) 555-0100" />
+                  </div>
+                </div>
+              )}
+
+              <CustomerDetailsForm
+                formData={formData}
+                isExistingCustomer={isExistingCustomer}
+                completeProfile={completeProfile}
+                handleChange={handleChange}
+                handleDateChange={handleDateChange}
+                handleSubmit={handleSubmit}
+                handleBack={handleBack}
+                loadingSlots={loadingSlots}
+                allSlots={allSlots}
+                dateError={dateError}
+                canSubmit={canSubmit}
+              />
+            </>
+          )}
+
+          {/* Active reservations */}
+          {showReservationOptions && (
+            <ActiveReservations
+              activeReservations={activeReservations}
+              selectedReservation={selectedReservation}
+              openReservation={openReservation}
+              cancelReservation={cancelReservation}
+              startEditing={startEditing}
+              onCreateNew={() => { setShowReservationOptions(false); setStep(2); }}
+              onBack={handleBack}
+            />
+          )}
+
+          {/* Post-booking confirmation */}
+          {confirmation && !showReservationOptions && (
             <ReservationConfirmation
               confirmation={confirmation}
               onNewReservation={handleNewReservation}
+              onViewReservations={goToReservations}
             />
           )}
 
           {message && (
-            <p className="res-error" role="alert" style={{ marginTop: "16px" }}>
-              {message}
-            </p>
+            <p className="res-error" role="alert" style={{ marginTop: "16px" }}>{message}</p>
           )}
         </div>
       </div>

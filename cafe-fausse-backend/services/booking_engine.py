@@ -86,8 +86,10 @@ def validate_reservation_request(customer_id, requested_time, guest_count):
         return False, "We're closed at that time. Please select within business hours."
 
     if customer_id:
+        print(f"Customer_id: {customer_id}")
         if not check_same_day_reservation(customer_id, requested_time):
             return False, "You already have a reservation for this day. Only one reservation per day is allowed."
+    print(f"Customer_id: {customer_id}")
 
     logger.info(f'Reservation request validated — customer: {customer_id}, time: {requested_time}, guests: {guest_count}')
     return True, None

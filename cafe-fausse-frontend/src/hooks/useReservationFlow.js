@@ -27,12 +27,14 @@ export function useReservationFlow() {
     const [customerId, setCustomerId] = useState(null);
     const [isExistingCustomer, setIsExistingCustomer] = useState(false);
     const [completeProfile, setCompleteProfile] = useState(false);
-    const [message, setMessage] = useState("");         
-    const [dateError, setDateError] = useState("");     
+    const [message, setMessage] = useState("");         // general / submit errors
+    const [dateError, setDateError] = useState("");     // inline error under the date field
     const [availableSlots, setAvailableSlots] = useState([]);
     const [fullyBookedSlots, setFullyBookedSlots] = useState([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
+    const [loadingEmail, setLoadingEmail] = useState(false);
     const [confirmation, setConfirmation] = useState(null);
+    const [viewingReservation, setViewingReservation] = useState(false);
     const [activeReservations, setActiveReservations] = useState([]);
     const [showReservationOptions, setShowReservationOptions] = useState(false);
     const [editingReservationId, setEditingReservationId] = useState(null);
@@ -44,6 +46,7 @@ export function useReservationFlow() {
         ].sort((a, b) => a.time.localeCompare(b.time));
     }, [availableSlots, fullyBookedSlots]);
 
+    // True only when every required field is filled and there are no blocking errors
     const canSubmit = !!(
         formData.date &&
         formData.time &&
@@ -69,6 +72,7 @@ export function useReservationFlow() {
         setCompleteProfile(false);
         setActiveReservations([]);
         setShowReservationOptions(false);
+        setViewingReservation(false);
         setAvailableSlots([]);
         setFullyBookedSlots([]);
         setMessage("");
@@ -77,21 +81,23 @@ export function useReservationFlow() {
     }
 
     function handleBack() {
+        setViewingReservation(false);
+        setShowReservationOptions(false);
+        setSelectedReservation(null);
         setStep(1);
         setMessage("");
         setDateError("");
         setCustomerId(null);
         setIsExistingCustomer(false);
         setCompleteProfile(false);
+        setActiveReservations([]);
         setAvailableSlots([]);
         setFullyBookedSlots([]);
-        setFormData(prev => ({
-            ...initialFormState,
-            email: prev.email,
-        }));
+        setEditingReservationId(null);
+        setFormData(initialFormState);
     }
 
-    async function fetchAvailability(date, id = customerId) {
+    async function fetchAvailability(date, id = customerId, reservationId = null) {
         if (!date) return;
 
         setLoadingSlots(true);
@@ -100,10 +106,11 @@ export function useReservationFlow() {
         setFullyBookedSlots([]);
 
         try {
-            const data = await getAvailability(date, id);
+            const data = await getAvailability(date, id, reservationId);
             setAvailableSlots(data.time_slots.available_slots);
             setFullyBookedSlots(data.time_slots.fully_booked_slots);
         } catch (error) {
+            // Show inline under the date field — keeps the error close to what caused it
             setDateError(error.message || "Could not load availability for this date.");
         } finally {
             setLoadingSlots(false);
@@ -124,7 +131,7 @@ export function useReservationFlow() {
         setShowReservationOptions(false);
         setStep(2);
 
-        await fetchAvailability(date, customerId);
+        await fetchAvailability(date, customerId, reservation.id);
     }
 
     async function handleEmailCheck(e) {
@@ -136,6 +143,7 @@ export function useReservationFlow() {
             return;
         }
 
+        setLoadingEmail(true);
         try {
             const data = await checkCustomer(formData.email);
 
@@ -149,6 +157,14 @@ export function useReservationFlow() {
             setCustomerId(data.customer_id);
             setIsExistingCustomer(true);
             setCompleteProfile(data.profile_complete);
+
+            // Pre-fill name/phone from the customer record so "Update My Details"
+            // shows what is currently on file rather than blank fields
+            setFormData(prev => ({
+                ...prev,
+                name: data.name || "",
+                phone: data.phone || "",
+            }));
 
             if (!data.profile_complete) {
                 setStep(2);
@@ -166,13 +182,16 @@ export function useReservationFlow() {
 
         } catch (error) {
             setMessage(error.message || "Server error. Please try again.");
+        } finally {
+            setLoadingEmail(false);
         }
     }
 
     async function handleDateChange(e) {
         const selectedDate = e.target.value;
+        // Clear the time immediately when date changes
         setFormData(prev => ({ ...prev, date: selectedDate, time: "" }));
-        await fetchAvailability(selectedDate);
+        await fetchAvailability(selectedDate, customerId, editingReservationId);
     }
 
     async function handleSubmit(e) {
@@ -190,7 +209,9 @@ export function useReservationFlow() {
                 setCustomerId(id);
             }
 
-            if (isExistingCustomer && !completeProfile) {
+            // Save profile changes when creating a new reservation (not when editing)
+            // Covers both: completing an incomplete profile AND updating an existing one
+            if (isExistingCustomer && !editingReservationId) {
                 await updateCustomer(id, formData.name, formData.phone);
             }
 
@@ -220,13 +241,33 @@ export function useReservationFlow() {
         }
     }
 
+    const [selectedReservation, setSelectedReservation] = useState(null);
+
     async function openReservation(reservationId) {
+        if (!reservationId) { setSelectedReservation(null); return; }
         try {
             const data = await getReservationById(reservationId);
-            setConfirmation(data.reservation);
+            setSelectedReservation(data.reservation);
         } catch (error) {
             setMessage(error.message || "Server error. Please try again.");
         }
+    }
+
+    async function goToReservations() {
+        // Clear confirmation and go to explorer, refreshing the list first
+        setConfirmation(null);
+        setMessage("");
+        try {
+            const resData = await getCustomerReservations(customerId);
+            setActiveReservations(resData.reservations);
+        } catch (_) { /* keep existing list if refresh fails */ }
+        setShowReservationOptions(true);
+    }
+
+    function closeViewedReservation() {
+        setConfirmation(null);
+        setViewingReservation(false);
+        setShowReservationOptions(true);
     }
 
     async function cancelReservation(reservationId) {
@@ -234,6 +275,7 @@ export function useReservationFlow() {
             await cancelReservationById(reservationId);
             const updated = activeReservations.filter(r => r.id !== reservationId);
             setActiveReservations(updated);
+            setSelectedReservation(prev => prev?.id === reservationId ? null : prev);
 
             if (updated.length === 0) {
                 setShowReservationOptions(false);
@@ -252,12 +294,15 @@ export function useReservationFlow() {
         message,
         dateError,
         loadingSlots,
+        loadingEmail,
         confirmation,
         activeReservations,
         showReservationOptions,
         allSlots,
         canSubmit,
         editingReservationId,
+        viewingReservation,
+        selectedReservation,
 
         handleChange,
         handleBack,
@@ -267,6 +312,8 @@ export function useReservationFlow() {
         openReservation,
         cancelReservation,
         handleNewReservation,
+        goToReservations,
+        closeViewedReservation,
         setStep,
         setShowReservationOptions,
         startEditing

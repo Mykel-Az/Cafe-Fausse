@@ -5,8 +5,6 @@ from services.reservation_services import create_reservation, update_reservation
 from services.booking_engine import validate_reservation_request, get_available_time_slots, check_same_day_reservation
 
 
-
-
 reservation_bp = Blueprint('reservation_bp', __name__)
 
 @reservation_bp.route('/reservations/<int:reservation_id>', methods=['GET'])
@@ -21,7 +19,6 @@ def get_reservation(reservation_id):
 @reservation_bp.route('/customers/<int:customer_id>/reservations', methods=['GET'])
 def get_customer_active_reservations(customer_id):
     reservations = (Reservation.query.filter_by(customer_id=customer_id, status='active').all())
-    
     reservations_data = [res.to_summary_dict() for res in reservations]
     return jsonify({'reservations': reservations_data}), 200
 
@@ -31,37 +28,36 @@ def available_time_slots():
     date_str = request.args.get('date')
     customer_id = request.args.get('customer_id')
 
-    print(f"Received request for available: {date_str, customer_id}")
     if not date_str:
         return jsonify({'error': 'Date parameter is required'}), 400
-    
+
     try:
         selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
         return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
-    
+
+    reservation_id = request.args.get("reservation_id", type=int)
+
     if customer_id:
-        if not check_same_day_reservation(customer_id, requested_date=selected_date):
-            print('ERROR: Same day error')
+        is_editing = reservation_id is not None
+        if not is_editing and not check_same_day_reservation(customer_id, requested_date=selected_date):
             return jsonify({'error': 'You already have a reservation on this date.'}), 400
-    
+
     time_slots, error = get_available_time_slots(selected_date)
-    print(f"Available time slots for {selected_date}: {time_slots}")
     if error:
         return jsonify({'error': error}), 400
-    
-    return jsonify({"date": date_str, "time_slots": time_slots}), 200
 
+    return jsonify({"date": date_str, "time_slots": time_slots}), 200
 
 
 @reservation_bp.route('/reservations/create', methods=['POST'])
 def create_reservation_route():
     data = request.get_json()
-    print("requested-data", data)
     customer_id = data.get('customer_id')
     date = data.get('date')
     time = data.get('time')
     guest_count = data.get('guest_count')
+
     if not guest_count:
         return jsonify({'message': 'Guest count is required'}), 400
     guest_count = int(guest_count)
@@ -73,11 +69,11 @@ def create_reservation_route():
         requested_time = datetime.strptime(f"{date}{time}", '%Y-%m-%d%H:%M')
     except ValueError:
         return jsonify({'message': 'Invalid date or time format'}), 400
-    
+
     success, result = create_reservation(customer_id, requested_time, guest_count)
     if success:
         return jsonify({'message': 'Reservation created successfully', 'reservation': result.to_dict()}), 201
-    
+
     return jsonify({'error': result}), 400
 
 
@@ -92,7 +88,7 @@ def update_reservation_route(reservation_id):
         new_time = datetime.strptime(f"{date}{time}", '%Y-%m-%d%H:%M')
     except ValueError:
         return jsonify({'message': 'Invalid date or time format'}), 400
-    
+
     success, result = update_reservation(reservation_id, new_time, guest_count)
     if success:
         return jsonify({'message': 'Reservation updated successfully', 'reservation': result}), 200
@@ -104,7 +100,6 @@ def update_reservation_route(reservation_id):
 def cancel_reservation_route(reservation_id):
     success, result = cancel_reservation(reservation_id)
     if success:
-        return jsonify({'message': 'Reservation cancelled successfully', 'reservation': result}), 200
-    
-    return jsonify({'error': result}), 400
+        return jsonify({'message': 'Reservation cancelled successfully', 'reservation': result})
 
+    return jsonify({'error': result}), 400

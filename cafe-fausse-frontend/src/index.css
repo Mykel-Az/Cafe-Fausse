@@ -463,11 +463,22 @@ select option:disabled { color: var(--ink-faint); }
   color: var(--ink-faint); margin-left: 8px; white-space: nowrap;
 }
 .res-step-label.active { color: var(--ink); }
+/* Active step label always visible, inactive ones hidden on small screens */
+.res-step-label.always-show { display: inline !important; }
 .res-step-line {
   width: 48px; height: 1px; background: var(--line);
   margin: 0 12px; flex-shrink: 0; transition: background var(--r);
 }
 .res-step-line.done { background: var(--tan); }
+
+/* ── Email step intro ── */
+.res-email-step-intro {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  margin-bottom: 24px;
+  max-width: 420px;
+}
 
 /* ── Email summary pill ── */
 .res-email-pill {
@@ -475,15 +486,21 @@ select option:disabled { color: var(--ink-faint); }
   background: var(--tan-pale); border: 1px solid var(--tan-light);
   padding: 10px 14px;
   font-size: 0.875rem; color: var(--ink-soft);
+  overflow: hidden;        /* prevent the pill itself from bursting */
 }
 .res-email-pill svg { color: var(--tan); flex-shrink: 0; }
-.res-email-pill span { flex: 1; font-weight: 400; }
+.res-email-pill span {
+  flex: 1; font-weight: 400;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  min-width: 0;            /* allow flex child to shrink below content size */
+}
 .res-email-pill-change {
   background: none; border: none;
   font-family: var(--ff-body); font-size: 0.72rem; font-weight: 500;
   letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--tan); cursor: pointer; padding: 2px 0;
+  color: var(--tan); cursor: pointer; padding: 2px 4px;
   border-bottom: 1px solid transparent; transition: border-color var(--r);
+  flex-shrink: 0;          /* never let the button shrink or fall off */
 }
 .res-email-pill-change:hover { border-bottom-color: var(--tan); }
 
@@ -493,6 +510,31 @@ select option:disabled { color: var(--ink-faint); }
   margin-top: 5px; display: block; line-height: 1.4;
 }
 
+/* ── Form section groups (Date & Time, Party Size, Your Details) ── */
+.res-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 20px 20px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  position: relative;
+}
+.res-form-section-label {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tan);
+  position: absolute;
+  top: -9px;
+  left: 16px;
+  background: var(--white);
+  padding: 0 6px;
+}
+/* Remove bottom margin on fields inside a section — section gap handles it */
+.res-form-section .field { margin-bottom: 0; }
+
 /* ── Time slot grid ── */
 .time-slots-label {
   font-size: 0.7rem; font-weight: 500;
@@ -501,11 +543,12 @@ select option:disabled { color: var(--ink-faint); }
 }
 .time-slots-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .time-slot-btn {
-  padding: 9px 15px;
+  padding: 9px 12px;
   font-family: var(--ff-body); font-size: 0.82rem; font-weight: 400;
   border: 1px solid var(--line); background: var(--surface);
   color: var(--ink-soft); cursor: pointer;
   transition: all var(--r); min-height: 40px; letter-spacing: 0.03em;
+  min-width: 88px; text-align: center;
 }
 .time-slot-btn:hover:not(:disabled):not(.booked) {
   border-color: var(--tan); color: var(--tan); background: var(--tan-pale);
@@ -623,15 +666,7 @@ select option:disabled { color: var(--ink-faint); }
 .res-new-btn:hover { background: var(--tan); color: var(--white); border-color: var(--tan); }
 
 /* Confirmation */
-.res-confirm {
-  text-align: center; padding: 48px 32px;
-  border: 1px solid var(--line); background: var(--white);
-}
-.res-confirm-icon { font-size: 1.6rem; color: var(--tan); margin-bottom: 14px; }
-.res-confirm h2 { font-family: var(--ff-display); font-size: 2rem; color: var(--ink); margin-bottom: 22px; }
-.res-confirm p { color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 5px; }
-.res-confirm strong { color: var(--ink); font-weight: 500; }
-.res-confirm .btn { margin-top: 24px; }
+/* confirmation styles moved to explorer section below */
 
 /* ────────────────────────────────────────
    FOOTER
@@ -730,11 +765,19 @@ select option:disabled { color: var(--ink-faint); }
   .footer { padding: 48px 20px 24px; }
 }
 
+/* Reservations page — shorter hero on mobile */
+@media (max-width: 680px) {
+  .has-hero .page-hero { max-height: 180px; }
+  .res-steps { padding-top: 8px; }
+}
+
 /* Reservation UX — mobile tweaks */
 @media (max-width: 480px) {
-  .res-step-label { display: none; } /* just show circles on very small screens */
+  .res-step-label:not(.always-show) { display: none; }
   .res-step-line  { width: 28px; margin: 0 6px; }
-  .res-form-actions { grid-template-columns: 1fr 2fr; }
+  .res-form-actions { grid-template-columns: 1fr; }
+  .res-back-btn, .res-submit { width: 100%; }
+  .time-slot-btn { font-size: 0.76rem; min-width: 76px; }
   .guest-grid { gap: 6px; }
   .guest-btn  { width: 40px; height: 40px; font-size: 0.85rem; }
 }
@@ -1532,4 +1575,569 @@ select option:disabled { color: var(--ink-faint); }
 .error-actions {
   display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
   margin-top: 28px;
+}
+
+/* ── Email step loading state ─────────────────────────────────────── */
+.res-submit.loading {
+  opacity: 0.75;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.res-submit-inner {
+  display: flex; align-items: center;
+  justify-content: center; gap: 10px;
+}
+
+.res-spinner {
+  display: inline-block;
+  width: 15px; height: 15px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+
+/* ================================================================
+   RESERVATIONS — EXPLORER LAYOUT
+   Full-width: cards on left, detail slides in on right
+   ================================================================ */
+
+/*
+  The explorer breaks OUT of .res-page's narrow 560px column.
+  We use negative margins + full viewport width so both panels
+  breathe and have real space on desktop.
+*/
+
+.res-explorer-root {
+  display: flex;
+  flex-direction: column;          /* stack titlebar above body row */
+  /* Escape the 560px .res-page constraint */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: var(--max);
+  min-height: 520px;
+}
+
+/* ── Title bar — always full width, never affected by the slide ── */
+.res-explorer-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 48px 20px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.res-cards-head {
+  flex: 1;
+  font-family: var(--ff-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ── Body row: cards + sliding pane side by side ─────────────── */
+.res-explorer-body {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+}
+
+/* ── LEFT: card list ─────────────────────────────────────────── */
+.res-explorer-list {
+  flex: 1 1 100%;
+  min-width: 0;
+  padding: 28px 48px 40px;
+  transition: flex 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+  border-right: 0px solid var(--line);
+}
+
+/* When detail panel is open — list uses left half */
+.res-explorer-list.shrunk {
+  flex: 0 0 48%;
+  border-right: 1px solid var(--line);
+}
+
+.res-new-top-btn {
+  font-family: var(--ff-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 8px 18px;
+  background: var(--tan);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity var(--r);
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+/* Desktop: show full text, hide "+" */
+.res-new-btn-short { display: none; }
+.res-new-btn-full  { display: inline; }
+.res-new-top-btn:hover { opacity: 0.85; }
+
+/* Reservation cards */
+.res-card {
+  border: 1px solid var(--line);
+  background: var(--white);
+  padding: 20px 24px;
+  margin-bottom: 14px;
+  transition: border-color var(--r), box-shadow var(--r);
+}
+.res-card:hover         { border-color: var(--tan-light); box-shadow: 0 4px 16px rgba(0,0,0,0.07); cursor: pointer; }
+.res-card-selected      {
+  border-color: var(--tan) !important;
+  box-shadow: inset 4px 0 0 var(--tan);
+}
+
+.res-card-detail        { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
+.res-card-date          { font-weight: 500; font-size: 0.92rem; color: var(--ink); }
+.res-card-time          { font-family: var(--ff-display); font-size: 1.05rem; color: var(--tan); }
+.res-card-meta          { font-size: 0.78rem; color: var(--ink-soft); }
+.res-card-actions       { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.res-card-btn {
+  padding: 7px 16px;
+  font-family: var(--ff-body);
+  font-size: 0.76rem;
+  font-weight: 500;
+  border: 1px solid var(--tan);
+  color: var(--tan);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--r);
+}
+.res-card-btn:hover        { background: var(--tan); color: var(--white); }
+.res-card-btn.cancel       { border-color: var(--err); color: var(--err); }
+.res-card-btn.cancel:hover { background: var(--err); color: var(--white); }
+
+/* ── RIGHT: sliding detail pane ──────────────────────────────── */
+.res-detail-pane {
+  flex: 0 0 0%;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--surface);        /* very slight off-white tint */
+  transition: flex 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.22s ease 0.18s;
+}
+
+.res-detail-pane.open {
+  flex: 0 0 52%;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.res-detail-pane-inner {
+  padding: 48px 52px;
+  min-width: 320px;                   /* prevents content crunch mid-animation */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.res-detail-pane-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.res-detail-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tan);
+}
+
+.res-detail-close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color var(--r);
+}
+.res-detail-close:hover { color: var(--ink); }
+
+/* Detail panel icon */
+.res-detail-hero {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.res-confirm-icon {
+  font-size: 1.8rem;
+  color: var(--tan);
+  display: block;
+}
+
+/* Two grouped sections in the detail panel */
+.res-detail-group {
+  border: 1px solid var(--line);
+  background: var(--white);
+  padding: 18px 18px 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.res-detail-group-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tan);
+  position: absolute;
+  top: -8px; left: 12px;
+  background: var(--white);
+  padding: 0 5px;
+}
+
+/* Two-column label / value rows */
+.res-detail-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+.res-detail-row:last-child { border-bottom: none; }
+.res-detail-label {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.res-detail-value {
+  font-size: 0.88rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.res-detail-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.res-card-btn-primary {
+  background: var(--tan);
+  color: var(--white);
+  border-color: var(--tan);
+}
+.res-card-btn-primary:hover {
+  background: var(--tan-dk);
+  color: var(--white);
+  border-color: var(--tan-dk);
+}
+
+/* Cancel confirm — uses design tokens */
+.res-cancel-confirm {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: rgba(184,92,92,0.06);
+  border: 1px solid rgba(184,92,92,0.25);
+}
+.res-cancel-confirm p { font-size: 0.85rem; color: var(--ink); margin-bottom: 12px; }
+.res-cancel-confirm-actions { display: flex; gap: 8px; }
+
+/* Empty state */
+.res-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 56px 24px;
+  gap: 10px;
+}
+.res-empty-icon {
+  font-size: 2rem;
+  color: var(--line);
+  margin-bottom: 6px;
+}
+.res-empty-title {
+  font-family: var(--ff-display);
+  font-size: 1.2rem;
+  color: var(--ink);
+  margin: 0;
+}
+.res-empty-sub {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+  max-width: 300px;
+  line-height: 1.6;
+}
+
+/* ── Post-booking confirmation screen ────────────────────────── */
+.res-confirm {
+  text-align: center;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 48px 0;
+}
+.res-confirm h2 {
+  font-family: var(--ff-display);
+  font-size: 1.9rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+
+/* Two grouped sections inside confirmation */
+.res-confirm-group {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--white);
+  margin-bottom: 12px;
+  position: relative;
+  padding: 20px 20px 16px;
+}
+.res-confirm-group-label {
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tan);
+  position: absolute;
+  top: -9px; left: 14px;
+  background: var(--white);
+  padding: 0 6px;
+}
+.res-confirm-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 20px;
+  align-items: baseline;
+}
+.res-confirm-key {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.res-confirm-val {
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.res-confirm-status {
+  text-transform: capitalize;
+  color: var(--tan);
+  font-weight: 500;
+}
+
+/* Action buttons */
+.res-confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--ink-soft);
+  color: var(--ink-soft);
+  padding: 12px 28px;
+  font-family: var(--ff-body); font-size: 0.78rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; transition: all var(--r);
+}
+.btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+
+/* Edit-profile bar */
+.res-edit-profile-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap;
+  padding: 10px 14px;
+  background: var(--tan-pale); border-left: 3px solid var(--tan);
+  border-top: 1px solid var(--tan-light);
+  border-right: 1px solid var(--tan-light);
+  border-bottom: 1px solid var(--tan-light);
+  margin-bottom: 20px;
+}
+.res-edit-profile-bar-left {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1; min-width: 0;
+}
+.res-edit-profile-bar-left svg { color: var(--tan); flex-shrink: 0; }
+.res-edit-profile-hint {
+  font-size: 0.82rem; color: var(--tan-dk); line-height: 1.4;
+}
+.res-edit-profile-btn {
+  font-family: var(--ff-body); font-size: 0.75rem; font-weight: 500;
+  padding: 5px 12px; white-space: nowrap; flex-shrink: 0;
+  border: 1px solid var(--tan); color: var(--tan); background: transparent;
+  cursor: pointer; transition: all var(--r);
+}
+.res-edit-profile-btn:hover { background: var(--tan); color: var(--white); }
+
+/* Edit profile form — visually softer / indented */
+.res-edit-profile-form {
+  background: var(--tan-pale);
+  border: 1px solid var(--tan-light);
+  border-top: none;
+  padding: 16px 16px 20px;
+  margin-top: -20px;
+  margin-bottom: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.res-edit-profile-form .field label {
+  color: var(--tan-dk);
+}
+.res-edit-profile-form .field input {
+  background: var(--white);
+}
+
+/* Stack on small screens */
+@media (max-width: 480px) {
+  .res-edit-profile-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .res-edit-profile-btn { width: 100%; text-align: center; }
+}
+
+
+/* ── Mobile (≤ 680px) ───────────────────────────────────────── */
+@media (max-width: 680px) {
+  .res-explorer-root {
+    flex-direction: column;
+    width: 100%;
+    left: unset;
+    transform: none;
+    min-height: unset;
+    position: relative;
+  }
+
+  /* Titlebar on mobile — nothing overflows */
+  .res-explorer-titlebar {
+    padding: 12px 16px 12px;
+    gap: 8px;
+  }
+  .res-explorer-titlebar .res-cards-head {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .res-explorer-titlebar .res-back-btn {
+    font-size: 0.78rem;
+    padding: 4px 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  /* "+" circle button on mobile */
+  .res-new-top-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    line-height: 1;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .res-new-btn-short { display: flex; align-items: center; justify-content: center; }
+  .res-new-btn-full  { display: none; }
+
+  /* Body row stacks on mobile */
+  .res-explorer-body {
+    flex-direction: column;
+  }
+
+  /* List padding tighter on mobile */
+  .res-explorer-list,
+  .res-explorer-list.shrunk {
+    flex: unset;
+    width: 100%;
+    padding: 20px 20px;
+    border-right: none;
+    transition: none;
+  }
+
+  /* Hide list when mobile detail page is showing */
+  .res-explorer-list.mobile-list-hidden {
+    display: none;
+  }
+
+  /* Desktop slide-in pane: completely hidden on mobile
+     (replaced by the full-screen page below) */
+  .res-detail-pane,
+  .res-detail-pane.open {
+    display: none !important;
+  }
+
+  /* Full-screen detail page — sits below the fixed navbar, slides up slowly */
+  .res-mobile-detail-page {
+    position: fixed;
+    top: 60px;              /* clear the navbar */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    z-index: 99;            /* just under navbar (z-index 100) */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: mobileDetailSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes mobileDetailSlideUp {
+    from { transform: translateY(60px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .res-mobile-detail-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--white);
+    flex-shrink: 0;
+  }
+
+  .res-mobile-detail-body {
+    padding: 24px 20px 40px;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Hide mobile detail page on desktop */
+@media (min-width: 681px) {
+  .res-mobile-detail-page {
+    display: none;
+  }
+}
+
+/* on-file note in edit profile form */
+.res-edit-profile-onfile {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin-bottom: 4px;
 }
