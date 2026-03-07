@@ -186,6 +186,12 @@ button { font-family: var(--ff-body); cursor: pointer; }
 .hero-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(160deg, rgba(10,7,4,0.58) 0%, rgba(10,7,4,0.28) 50%, rgba(10,7,4,0.62) 100%);
+  /* background: linear-gradient(
+    160deg,
+    rgba(10,7,4,0.68) 0%,
+    rgba(10,7,4,0.42) 45%,
+    rgba(10,7,4,0.72) 100%
+  ); */
 }
 .hero-content {
   position: relative; z-index: 1;
@@ -194,18 +200,22 @@ button { font-family: var(--ff-body); cursor: pointer; }
 .hero-eyebrow {
   display: inline-block; font-size: 0.72rem; font-weight: 500;
   letter-spacing: 0.32em; text-transform: uppercase;
-  color: var(--tan-light); margin-bottom: 18px;
+  color: var(--tan);
+  text-shadow: 0 1px 12px rgba(0,0,0,0.6);
+  margin-bottom: 18px;
 }
 .hero h1 {
   font-family: var(--ff-display);
   font-size: clamp(3.2rem, 8vw, 6.5rem);
   color: var(--white); line-height: 1.0; margin-bottom: 16px;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.65);
 }
 .hero-sub {
   font-size: clamp(0.85rem, 2vw, 1rem);
-  color: rgba(255,255,255,0.6);
-  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.92);
+  letter-spacing: 0.22em; text-transform: uppercase;
   font-weight: 300; margin-bottom: 36px;
+  text-shadow: 0 1px 16px rgba(0,0,0,0.55);
 }
 .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
@@ -222,8 +232,16 @@ button { font-family: var(--ff-body); cursor: pointer; }
 .btn-dark   { background: var(--ink);  color: var(--white); border-color: var(--ink); }
 .btn-dark:hover { background: #2e2e2e; transform: translateY(-1px); }
 
-.btn-ghost  { background: transparent; color: var(--white); border-color: rgba(255,255,255,0.45); }
-.btn-ghost:hover { background: rgba(255,255,255,0.1); }
+.btn-ghost  {
+  background: transparent;
+  color: var(--white);
+  border-color: rgba(255,255,255,0.88);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.4);
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: var(--white);
+}
 
 .btn-tan    { background: var(--tan);  color: var(--white); border-color: var(--tan); }
 .btn-tan:hover { background: var(--tan-dk); transform: translateY(-1px); }
@@ -1661,7 +1679,16 @@ select option:disabled { color: var(--ink-faint); }
   padding: 28px 48px 40px;
   transition: flex 0.38s cubic-bezier(0.4, 0, 0.2, 1);
   border-right: 0px solid var(--line);
+  /* Scroll after ~3 cards (each card ~100px + 14px gap ≈ 342px) */
+  max-height: 520px;
+  overflow-y: auto;
+  /* Subtle scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--tan-light) transparent;
 }
+.res-explorer-list::-webkit-scrollbar { width: 4px; }
+.res-explorer-list::-webkit-scrollbar-thumb { background: var(--tan-light); border-radius: 2px; }
+.res-explorer-list::-webkit-scrollbar-track { background: transparent; }
 
 /* When detail panel is open — list uses left half */
 .res-explorer-list.shrunk {
@@ -1828,6 +1855,9 @@ select option:disabled { color: var(--ink-faint); }
   font-size: 0.88rem;
   color: var(--ink);
   line-height: 1.5;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .res-detail-actions {
@@ -1952,7 +1982,7 @@ select option:disabled { color: var(--ink-faint); }
   gap: 10px;
   margin-top: 24px;
 }
-.btn-ghost {
+.btn-ghost-muted {
   background: transparent;
   border: 1px solid var(--ink-soft);
   color: var(--ink-soft);
@@ -1961,7 +1991,7 @@ select option:disabled { color: var(--ink-faint); }
   letter-spacing: 0.12em; text-transform: uppercase;
   cursor: pointer; transition: all var(--r);
 }
-.btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+.btn-ghost-muted:hover { border-color: var(--ink); color: var(--ink); }
 
 /* Edit-profile bar */
 .res-edit-profile-bar {
@@ -2027,32 +2057,56 @@ select option:disabled { color: var(--ink-faint); }
     transform: none;
     min-height: unset;
     position: relative;
+    background: var(--surface);
   }
 
-  /* Titlebar on mobile — nothing overflows */
+  /* ── Slim app-style title bar ── */
   .res-explorer-titlebar {
-    padding: 12px 16px 12px;
-    gap: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 52px;
+    background: var(--white);
+    border-bottom: 2px solid var(--tan);
+    gap: 0;
+    flex-shrink: 0;
   }
+  /* Back arrow — tan, no border */
+  .res-explorer-titlebar .res-back-btn {
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    border: none;
+    padding: 0;
+    color: var(--tan);
+    background: transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .res-explorer-titlebar .res-back-btn:hover {
+    border: none;
+    color: var(--tan-dk);
+  }
+  /* Centered display-font title */
   .res-explorer-titlebar .res-cards-head {
-    font-size: 0.88rem;
+    font-family: var(--ff-display);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--ink);
+    text-align: center;
+    flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .res-explorer-titlebar .res-back-btn {
-    font-size: 0.78rem;
-    padding: 4px 0;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  /* "+" circle button on mobile */
+  /* "+" circle button */
   .res-new-top-btn {
     width: 32px;
     height: 32px;
     padding: 0;
     border-radius: 50%;
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     line-height: 1;
     flex-shrink: 0;
     display: flex;
@@ -2062,68 +2116,241 @@ select option:disabled { color: var(--ink-faint); }
   .res-new-btn-short { display: flex; align-items: center; justify-content: center; }
   .res-new-btn-full  { display: none; }
 
-  /* Body row stacks on mobile */
+  /* Body row stacks */
   .res-explorer-body {
     flex-direction: column;
   }
 
-  /* List padding tighter on mobile */
+  /* Card list — warm background, tight gutters */
   .res-explorer-list,
   .res-explorer-list.shrunk {
     flex: unset;
     width: 100%;
-    padding: 20px 20px;
+    padding: 14px 16px 32px;
     border-right: none;
     transition: none;
+    max-height: none;
+    overflow-y: visible;
+    background: var(--surface);
   }
 
-  /* Hide list when mobile detail page is showing */
+  /* ── Mobile reservation cards ── */
+  /* Override desktop card with horizontal layout */
+  .res-explorer-list .res-card {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 2px;
+    background: var(--white);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: box-shadow var(--r), transform var(--r);
+    position: relative;
+  }
+  .res-explorer-list .res-card:hover,
+  .res-explorer-list .res-card:active {
+    box-shadow: 0 3px 12px rgba(0,0,0,0.11);
+    transform: translateY(-1px);
+    border: none;
+  }
+  /* Selected: tan left accent */
+  .res-explorer-list .res-card.res-card-selected {
+    border-left: 3px solid var(--tan);
+    padding-left: 13px;
+    box-shadow: 0 2px 10px rgba(184,146,106,0.18);
+  }
+
+  /* Card content: stacked text fills remaining space */
+  .res-explorer-list .res-card-detail {
+    flex: 1;
+    min-width: 0;
+    gap: 2px;
+    margin-bottom: 0;          /* no bottom margin — we're horizontal now */
+  }
+  .res-explorer-list .res-card-date {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .res-explorer-list .res-card-time {
+    font-family: var(--ff-display);
+    font-size: 1.15rem;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .res-explorer-list .res-card-meta {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  /* Hide action buttons — whole card is tappable on mobile */
+  .res-explorer-list .res-card-actions {
+    display: none;
+  }
+  /* Suppress desktop ::before accent bar */
+  .res-explorer-list .res-card::before {
+    display: none;
+  }
+  /* Chevron — right-side tap affordance as flex child */
+  .res-explorer-list .res-card::after {
+    content: "›";
+    font-size: 1.6rem;
+    color: var(--tan-light);
+    line-height: 1;
+    flex-shrink: 0;
+    align-self: center;
+    margin-left: 12px;
+    transition: color var(--r), transform var(--r);
+  }
+  .res-explorer-list .res-card:hover::after {
+    color: var(--tan);
+    transform: translateX(2px);
+  }
+  .res-explorer-list .res-card.res-card-selected::after {
+    color: var(--tan);
+  }
+
+  /* Empty state on mobile */
+  .res-explorer-list .res-empty-state {
+    padding: 48px 16px;
+  }
+
+  /* Hide list when detail page is open */
   .res-explorer-list.mobile-list-hidden {
     display: none;
   }
 
-  /* Desktop slide-in pane: completely hidden on mobile
-     (replaced by the full-screen page below) */
+  /* Desktop slide-in pane hidden on mobile */
   .res-detail-pane,
   .res-detail-pane.open {
     display: none !important;
   }
 
-  /* Full-screen detail page — sits below the fixed navbar, slides up slowly */
+  /* ─── Mobile detail full-screen page ─────────────────────────── */
   .res-mobile-detail-page {
     position: fixed;
-    top: 60px;              /* clear the navbar */
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--bg);
-    z-index: 99;            /* just under navbar (z-index 100) */
+    top: 60px;
+    left: 0; right: 0; bottom: 0;
+    background: var(--surface);    /* warm off-white, matches site tone */
+    z-index: 99;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    animation: mobileDetailSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: mobileDetailSlideUp 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   @keyframes mobileDetailSlideUp {
-    from { transform: translateY(60px); opacity: 0; }
+    from { transform: translateY(40px); opacity: 0; }
     to   { transform: translateY(0);    opacity: 1; }
   }
 
+  /* Top nav bar — slim, with tan accent bottom line */
   .res-mobile-detail-header {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 18px 20px 14px;
-    border-bottom: 1px solid var(--line);
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 52px;
     background: var(--white);
+    border-bottom: 2px solid var(--tan);
     flex-shrink: 0;
   }
 
+  /* "← Reservations" — looks like a native back nav */
+  .res-mobile-detail-header .res-back-btn {
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    border: none;
+    padding: 0;
+    color: var(--tan);
+    background: transparent;
+  }
+  .res-mobile-detail-header .res-back-btn:hover {
+    border: none;
+    color: var(--tan-dk);
+  }
+
+  /* Page title in header */
+  .res-mobile-detail-title {
+    font-family: var(--ff-display);
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  /* Scrollable body */
   .res-mobile-detail-body {
-    padding: 24px 20px 40px;
+    padding: 20px 16px 48px;
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ✦ icon on mobile — smaller, centered, with a light rule beneath */
+  .res-mobile-detail-body .res-detail-hero {
+    text-align: center;
+    padding: 16px 0 12px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 0;
+  }
+  .res-mobile-detail-body .res-detail-hero .res-confirm-icon {
+    font-size: 1.4rem;
+  }
+
+  /* Groups on mobile — card-like with shadow instead of flat border */
+  .res-mobile-detail-body .res-detail-group {
+    background: var(--white);
+    border: none;
+    border-radius: 2px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    padding: 20px 16px 14px;
+  }
+  .res-mobile-detail-body .res-detail-group-label {
+    background: var(--white);
+    font-size: 0.6rem;
+  }
+
+  /* Row label narrower on mobile */
+  .res-mobile-detail-body .res-detail-row {
+    grid-template-columns: 72px 1fr;
+  }
+
+  /* Actions on mobile — full-width stacked buttons */
+  .res-mobile-detail-body .res-detail-actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .res-mobile-detail-body .res-detail-actions .res-card-btn,
+  .res-mobile-detail-body .res-detail-actions .res-card-btn-primary {
+    width: 100%;
+    padding: 13px 16px;
+    text-align: center;
+    font-size: 0.8rem;
+    justify-content: center;
+  }
+
+  /* Cancel confirm on mobile */
+  .res-mobile-detail-body .res-cancel-confirm {
+    border-radius: 2px;
+  }
+  .res-mobile-detail-body .res-cancel-confirm-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .res-mobile-detail-body .res-cancel-confirm-actions .res-card-btn {
+    width: 100%;
+    text-align: center;
   }
 }
 

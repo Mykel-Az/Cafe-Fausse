@@ -1,5 +1,13 @@
 const GUEST_OPTIONS = [1, 2, 3, 4, 5];
 
+/** Convert "18:00" → "6:00 PM", "09:30" → "9:30 AM" */
+function to12hr(time24) {
+    const [h, m] = time24.split(":").map(Number);
+    const period = h >= 12 ? "PM" : "AM";
+    const hour   = h % 12 || 12;
+    return `${hour}:${String(m).padStart(2, "0")} ${period}`;
+}
+
 export default function CustomerDetailsForm({
     formData,
     isExistingCustomer,
@@ -8,6 +16,7 @@ export default function CustomerDetailsForm({
     handleDateChange,
     handleSubmit,
     handleBack,
+    handleChangeEmail,
     loadingSlots,
     allSlots,
     dateError,
@@ -38,7 +47,7 @@ export default function CustomerDetailsForm({
                     <polyline points="22,6 12,13 2,6" />
                 </svg>
                 <span>{formData.email}</span>
-                <button type="button" className="res-email-pill-change" onClick={handleBack} aria-label="Change email">
+                <button type="button" className="res-email-pill-change" onClick={handleChangeEmail || handleBack} aria-label="Change email">
                     Change
                 </button>
             </div>
@@ -104,9 +113,9 @@ export default function CustomerDetailsForm({
                                                 !slot.available ? "booked" : ""
                                             ].filter(Boolean).join(" ")}
                                             aria-pressed={formData.time === slot.time}
-                                            aria-label={`${slot.time}${!slot.available ? " — fully booked" : ""}`}
+                                            aria-label={`${to12hr(slot.time)}${!slot.available ? " — fully booked" : ""}`}
                                         >
-                                            {slot.time}
+                                            {to12hr(slot.time)}
                                         </button>
                                     ))}
                                 </div>

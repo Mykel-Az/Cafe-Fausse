@@ -59,9 +59,11 @@ export default function Reservations() {
     openReservation,
     cancelReservation,
     handleNewReservation,
+    handleChangeEmail,
     goToReservations,
     setStep,
     setShowReservationOptions,
+    setCameFromExplorer,
     startEditing,
   } = useReservationFlow();
 
@@ -144,6 +146,7 @@ export default function Reservations() {
                 handleDateChange={handleDateChange}
                 handleSubmit={handleSubmit}
                 handleBack={handleBack}
+                handleChangeEmail={handleChangeEmail}
                 loadingSlots={loadingSlots}
                 allSlots={allSlots}
                 dateError={dateError}
@@ -160,7 +163,7 @@ export default function Reservations() {
               openReservation={openReservation}
               cancelReservation={cancelReservation}
               startEditing={startEditing}
-              onCreateNew={() => { setShowReservationOptions(false); setStep(2); }}
+              onCreateNew={() => { setShowReservationOptions(false); setCameFromExplorer(true); setStep(2); }}
               onBack={handleBack}
             />
           )}

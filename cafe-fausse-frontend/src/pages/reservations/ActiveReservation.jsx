@@ -135,7 +135,7 @@ export default function ActiveReservations({
             {/* ── Title bar ── */}
             <div className="res-explorer-titlebar">
                 <button className="res-back-btn" onClick={onBack}>&#8592; Back</button>
-                <p className="res-cards-head">Your Active Reservations</p>
+                <p className="res-cards-head">Reservations</p>
                 <button className="res-new-top-btn" onClick={onCreateNew}>
                     <span className="res-new-btn-full">+ New Reservation</span>
                     <span className="res-new-btn-short" aria-label="New reservation">+</span>
@@ -200,9 +200,11 @@ export default function ActiveReservations({
                 <div className="res-mobile-detail-page">
                     <div className="res-mobile-detail-header">
                         <button className="res-back-btn" onClick={handleClose}>
-                            &#8592; Back to Reservations
+                            &#8592; Reservations
                         </button>
-                        <span className="res-detail-eyebrow">Reservation Details</span>
+                        <span className="res-mobile-detail-title">Details</span>
+                        {/* spacer to balance the back button */}
+                        <span style={{ width: "80px" }} aria-hidden="true" />
                     </div>
                     <div className="res-mobile-detail-body">
                         <DetailContent

@@ -38,6 +38,7 @@ export function useReservationFlow() {
     const [activeReservations, setActiveReservations] = useState([]);
     const [showReservationOptions, setShowReservationOptions] = useState(false);
     const [editingReservationId, setEditingReservationId] = useState(null);
+    const [cameFromExplorer, setCameFromExplorer] = useState(false);
 
     const allSlots = useMemo(() => {
         return [
@@ -73,6 +74,7 @@ export function useReservationFlow() {
         setActiveReservations([]);
         setShowReservationOptions(false);
         setViewingReservation(false);
+        setCameFromExplorer(false);
         setAvailableSlots([]);
         setFullyBookedSlots([]);
         setMessage("");
@@ -80,10 +82,12 @@ export function useReservationFlow() {
         setEditingReservationId(null);
     }
 
-    function handleBack() {
+    function handleChangeEmail() {
+        // Always go fully back to step 1 regardless of flow origin
         setViewingReservation(false);
         setShowReservationOptions(false);
         setSelectedReservation(null);
+        setCameFromExplorer(false);
         setStep(1);
         setMessage("");
         setDateError("");
@@ -95,6 +99,32 @@ export function useReservationFlow() {
         setFullyBookedSlots([]);
         setEditingReservationId(null);
         setFormData(initialFormState);
+    }
+
+    function handleBack() {
+        setMessage("");
+        setDateError("");
+        setAvailableSlots([]);
+        setFullyBookedSlots([]);
+        setEditingReservationId(null);
+        setFormData(prev => ({ ...initialFormState, email: prev.email }));
+
+        if (cameFromExplorer) {
+            // Came here via "+ New Reservation" or "Edit" from the explorer — go back there
+            setCameFromExplorer(false);
+            setStep(1);
+            setShowReservationOptions(true);
+        } else {
+            // Came from step 1 email entry — go all the way back
+            setViewingReservation(false);
+            setShowReservationOptions(false);
+            setSelectedReservation(null);
+            setStep(1);
+            setCustomerId(null);
+            setIsExistingCustomer(false);
+            setCompleteProfile(false);
+            setActiveReservations([]);
+        }
     }
 
     async function fetchAvailability(date, id = customerId, reservationId = null) {
@@ -121,6 +151,7 @@ export function useReservationFlow() {
         const date = reservation.time_slot.split("T")[0];
         const time = reservation.time_slot.split("T")[1].slice(0, 5);
 
+        setCameFromExplorer(true);
         setEditingReservationId(reservation.id);
         setFormData(prev => ({
             ...prev,
@@ -312,10 +343,12 @@ export function useReservationFlow() {
         openReservation,
         cancelReservation,
         handleNewReservation,
+        handleChangeEmail,
         goToReservations,
         closeViewedReservation,
         setStep,
         setShowReservationOptions,
+        setCameFromExplorer,
         startEditing
     };
 }

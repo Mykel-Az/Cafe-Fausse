@@ -41,7 +41,7 @@ export default function ReservationConfirmation({ confirmation, onNewReservation
             <div className="res-confirm-actions">
                 <button className="btn btn-dark" onClick={onNewReservation}>Make Another Reservation</button>
                 {onViewReservations && (
-                    <button className="btn btn-ghost" onClick={onViewReservations}>View My Reservations</button>
+                    <button className="btn btn-ghost-muted" onClick={onViewReservations}>View My Reservations</button>
                 )}
             </div>
         </div>
