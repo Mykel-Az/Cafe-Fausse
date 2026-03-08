@@ -200,7 +200,7 @@ def complete_reservation(id):
 
 
 @staff_bp.route('/admin/customers', methods=['GET'])
-# @jwt_required()
+@jwt_required()
 def get_all_customers():
     filter_type = request.args.get('filter')
 

@@ -232,10 +232,28 @@ The frontend will be available at: `http://localhost:5173`
 | Reservations | `/reservations` | Availability checker and booking form |
 | About Us | `/about` | Founders' story and restaurant history |
 | Gallery | `/gallery` | Photos, awards, and customer reviews |
+| Staff Admin | `/admin/login` | Staff login portal |
+| Admin Dashboard | `/admin/dashboard` | Reservation stats overview *(JWT required)* |
+| Admin Reservations | `/admin/reservations` | Manage all reservations *(JWT required)* |
+| Admin Customers | `/admin/customers` | View and filter customers *(JWT required)* |
 
 **Opening Hours:**
 - Monday – Saturday: 5:00 PM – 11:00 PM
 - Sunday: 5:00 PM – 9:00 PM
+
+---
+
+## Admin Panel Access
+
+The staff portal is accessible at `/admin/login` and is separate from the public-facing site (no Navbar/Footer).
+
+If you have run the seed script, use the following test credentials to log in:
+
+| Username | Password |
+|---|---|
+| `admin` | `admin123` |
+
+> **Note:** Replace these with the actual credentials inserted by `seed_cafe_fausse.sql` if they differ. To create a new staff account manually, use the `POST /admin/create` endpoint.
 
 ---
 
