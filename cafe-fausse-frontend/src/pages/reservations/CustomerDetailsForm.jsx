@@ -1,6 +1,5 @@
 const GUEST_OPTIONS = [1, 2, 3, 4, 5];
 
-/** Convert "18:00" → "6:00 PM", "09:30" → "9:30 AM" */
 function to12hr(time24) {
     const [h, m] = time24.split(":").map(Number);
     const period = h >= 12 ? "PM" : "AM";
@@ -17,6 +16,7 @@ export default function CustomerDetailsForm({
     handleSubmit,
     handleBack,
     handleChangeEmail,
+    loadingSubmit,
     loadingSlots,
     allSlots,
     dateError,
@@ -156,11 +156,14 @@ export default function CustomerDetailsForm({
                     ← Back
                 </button>
                 <button type="submit"
-                    className={`res-submit${!canSubmit ? " disabled" : ""}`}
-                    disabled={!canSubmit}
+                    className={`res-submit${(!canSubmit || loadingSubmit) ? " disabled" : ""}${loadingSubmit ? " loading" : ""}`}
+                    disabled={!canSubmit || loadingSubmit}
                     title={!canSubmit ? "Please fill in all required fields" : undefined}
                 >
-                    Confirm Reservation
+                    <span className="res-submit-inner">
+                        {loadingSubmit && <span className="res-spinner" aria-hidden="true" />}
+                        {loadingSubmit ? "Confirming…" : "Confirm Reservation"}
+                    </span>
                 </button>
             </div>
 

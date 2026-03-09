@@ -23,7 +23,6 @@ function StepIndicator({ step }) {
                 </svg>
               ) : <span>{num}</span>}
             </div>
-            {/* Always show active label; show others only on wider screens via CSS */}
             <span className={`res-step-label${active ? " active always-show" : ""}`}>{label}</span>
             {i < steps.length - 1 && <div className={`res-step-line${done ? " done" : ""}`} />}
           </div>
@@ -48,6 +47,8 @@ export default function Reservations() {
     allSlots,
     canSubmit,
     loadingEmail,
+    loadingSubmit,
+    loadingGoTo,
     selectedReservation,
     editingReservationId,
 
@@ -101,7 +102,6 @@ export default function Reservations() {
           {/* Step 2 */}
           {!confirmation && !showReservationOptions && step === 2 && (
             <>
-              {/* Update details bar — only for returning complete-profile customers on a NEW reservation */}
               {isExistingCustomer && completeProfile && !editingReservationId && (
                 <div className="res-edit-profile-bar">
                   <div className="res-edit-profile-bar-left">
@@ -147,6 +147,7 @@ export default function Reservations() {
                 handleSubmit={handleSubmit}
                 handleBack={handleBack}
                 handleChangeEmail={handleChangeEmail}
+                loadingSubmit={loadingSubmit}
                 loadingSlots={loadingSlots}
                 allSlots={allSlots}
                 dateError={dateError}
@@ -174,6 +175,7 @@ export default function Reservations() {
               confirmation={confirmation}
               onNewReservation={handleNewReservation}
               onViewReservations={goToReservations}
+              loadingGoTo={loadingGoTo}
             />
           )}
 

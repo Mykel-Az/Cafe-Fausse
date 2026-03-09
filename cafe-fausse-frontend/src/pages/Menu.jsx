@@ -87,7 +87,6 @@ export default function Menu() {
 
   return (
     <main id="main" className="has-hero">
-      {/* Page hero */}
       <div className="page-hero" aria-hidden="true">
         <div
           className="page-hero-bg"

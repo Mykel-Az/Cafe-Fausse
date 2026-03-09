@@ -253,7 +253,7 @@ If you have run the seed script, use the following test credentials to log in:
 |---|---|
 | `admin` | `admin123` |
 
-> **Note:** Replace these with the actual credentials inserted by `seed_cafe_fausse.sql` if they differ. To create a new staff account manually, use the `POST /admin/create` endpoint.
+> **Note:** Replace these with the actual credentials inserted by `seed_cafe_fausse.sql` if they differ. To create a new staff account manually, use the `POST /admin/create` Api endpoint at the backend.
 
 ---
 

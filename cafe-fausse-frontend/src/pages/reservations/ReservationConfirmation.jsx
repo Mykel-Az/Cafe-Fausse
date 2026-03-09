@@ -1,4 +1,4 @@
-export default function ReservationConfirmation({ confirmation, onNewReservation, onViewReservations }) {
+export default function ReservationConfirmation({ confirmation, onNewReservation, onViewReservations, loadingGoTo }) {
     const dt = new Date(confirmation.time_slot);
     const dateStr = dt.toLocaleString("en-US", {
         weekday: "long", month: "long", day: "numeric", year: "numeric",
@@ -41,7 +41,16 @@ export default function ReservationConfirmation({ confirmation, onNewReservation
             <div className="res-confirm-actions">
                 <button className="btn btn-dark" onClick={onNewReservation}>Make Another Reservation</button>
                 {onViewReservations && (
-                    <button className="btn btn-ghost-muted" onClick={onViewReservations}>View My Reservations</button>
+                    <button
+                        className={`btn btn-ghost-muted${loadingGoTo ? " disabled" : ""}`}
+                        onClick={onViewReservations}
+                        disabled={loadingGoTo}
+                    >
+                        <span className="res-submit-inner">
+                            {loadingGoTo && <span className="res-spinner res-spinner-dark" aria-hidden="true" />}
+                            {loadingGoTo ? "Loading…" : "View My Reservations"}
+                        </span>
+                    </button>
                 )}
             </div>
         </div>

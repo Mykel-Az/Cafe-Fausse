@@ -5,7 +5,6 @@ const fmtDate = iso => fmt(iso, { weekday:"long", month:"long", day:"numeric", y
 const fmtTime = iso => fmt(iso, { hour:"2-digit", minute:"2-digit" });
 const fmtFull = iso => fmt(iso, { weekday:"long", month:"long", day:"numeric", year:"numeric", hour:"2-digit", minute:"2-digit" });
 
-/* ── Two-column detail row ── */
 function DetailRow({ label, value }) {
     return (
         <div className="res-detail-row">
@@ -15,7 +14,6 @@ function DetailRow({ label, value }) {
     );
 }
 
-/* ── Detail panel content (shared between desktop slide-in and mobile page) ── */
 function DetailContent({ reservation, onEdit, onCancel }) {
     const [pendingCancel, setPendingCancel] = useState(false);
     const [lastId, setLastId]   = useState(null);
@@ -77,7 +75,6 @@ function DetailContent({ reservation, onEdit, onCancel }) {
     );
 }
 
-/* ── Empty state ── */
 function EmptyState({ onCreateNew }) {
     return (
         <div className="res-empty-state">
@@ -91,7 +88,6 @@ function EmptyState({ onCreateNew }) {
     );
 }
 
-/* ── Main component ── */
 export default function ActiveReservations({
     activeReservations,
     selectedReservation,
@@ -132,7 +128,7 @@ export default function ActiveReservations({
     return (
         <div className="res-explorer-root">
 
-            {/* ── Title bar ── */}
+            {/* Title bar */}
             <div className="res-explorer-titlebar">
                 <button className="res-back-btn" onClick={onBack}>&#8592; Back</button>
                 <p className="res-cards-head">Reservations</p>
@@ -142,10 +138,10 @@ export default function ActiveReservations({
                 </button>
             </div>
 
-            {/* ── Body row ── */}
+            {/* Body  */}
             <div className="res-explorer-body">
 
-                {/* LEFT: card list */}
+                {/* card list */}
                 <div className={"res-explorer-list"
                     + (detailOpen ? " shrunk" : "")
                     + (mobileDetailOpen ? " mobile-list-hidden" : "")
@@ -193,7 +189,7 @@ export default function ActiveReservations({
                     </div>
                 </div>
 
-            </div>{/* end body row */}
+            </div>
 
             {/* MOBILE: full-screen detail page */}
             {mobileDetailOpen && (

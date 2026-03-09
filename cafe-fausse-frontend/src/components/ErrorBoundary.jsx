@@ -12,7 +12,6 @@ export default class ErrorBoundary extends Component {
     }
 
     componentDidCatch(error, info) {
-        // You could log to an error reporting service here
         console.error("ErrorBoundary caught:", error, info);
     }
 

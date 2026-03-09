@@ -38,6 +38,8 @@ export function useReservationFlow() {
     const [activeReservations, setActiveReservations] = useState([]);
     const [showReservationOptions, setShowReservationOptions] = useState(false);
     const [editingReservationId, setEditingReservationId] = useState(null);
+    const [loadingSubmit, setLoadingSubmit] = useState(false);
+    const [loadingGoTo,   setLoadingGoTo]   = useState(false);
     const [cameFromExplorer, setCameFromExplorer] = useState(false);
 
     const allSlots = useMemo(() => {
@@ -47,7 +49,6 @@ export function useReservationFlow() {
         ].sort((a, b) => a.time.localeCompare(b.time));
     }, [availableSlots, fullyBookedSlots]);
 
-    // True only when every required field is filled and there are no blocking errors
     const canSubmit = !!(
         formData.date &&
         formData.time &&
@@ -83,7 +84,6 @@ export function useReservationFlow() {
     }
 
     function handleChangeEmail() {
-        // Always go fully back to step 1 regardless of flow origin
         setViewingReservation(false);
         setShowReservationOptions(false);
         setSelectedReservation(null);
@@ -110,12 +110,10 @@ export function useReservationFlow() {
         setFormData(prev => ({ ...initialFormState, email: prev.email }));
 
         if (cameFromExplorer) {
-            // Came here via "+ New Reservation" or "Edit" from the explorer — go back there
             setCameFromExplorer(false);
             setStep(1);
             setShowReservationOptions(true);
         } else {
-            // Came from step 1 email entry — go all the way back
             setViewingReservation(false);
             setShowReservationOptions(false);
             setSelectedReservation(null);
@@ -140,7 +138,6 @@ export function useReservationFlow() {
             setAvailableSlots(data.time_slots.available_slots);
             setFullyBookedSlots(data.time_slots.fully_booked_slots);
         } catch (error) {
-            // Show inline under the date field — keeps the error close to what caused it
             setDateError(error.message || "Could not load availability for this date.");
         } finally {
             setLoadingSlots(false);
@@ -189,8 +186,7 @@ export function useReservationFlow() {
             setIsExistingCustomer(true);
             setCompleteProfile(data.profile_complete);
 
-            // Pre-fill name/phone from the customer record so "Update My Details"
-            // shows what is currently on file rather than blank fields
+
             setFormData(prev => ({
                 ...prev,
                 name: data.name || "",
@@ -220,7 +216,6 @@ export function useReservationFlow() {
 
     async function handleDateChange(e) {
         const selectedDate = e.target.value;
-        // Clear the time immediately when date changes
         setFormData(prev => ({ ...prev, date: selectedDate, time: "" }));
         await fetchAvailability(selectedDate, customerId, editingReservationId);
     }
@@ -232,6 +227,7 @@ export function useReservationFlow() {
         if (!canSubmit) return;
 
         let id = customerId;
+        setLoadingSubmit(true);
 
         try {
             if (!isExistingCustomer) {
@@ -240,8 +236,7 @@ export function useReservationFlow() {
                 setCustomerId(id);
             }
 
-            // Save profile changes when creating a new reservation (not when editing)
-            // Covers both: completing an incomplete profile AND updating an existing one
+
             if (isExistingCustomer && !editingReservationId) {
                 await updateCustomer(id, formData.name, formData.phone);
             }
@@ -269,6 +264,8 @@ export function useReservationFlow() {
 
         } catch (error) {
             setMessage(error.message || "An error occurred while submitting your reservation.");
+        } finally {
+            setLoadingSubmit(false);
         }
     }
 
@@ -285,14 +282,16 @@ export function useReservationFlow() {
     }
 
     async function goToReservations() {
-        // Clear confirmation and go to explorer, refreshing the list first
-        setConfirmation(null);
+        setLoadingGoTo(true);
         setMessage("");
         try {
             const resData = await getCustomerReservations(customerId);
             setActiveReservations(resData.reservations);
         } catch (_) { /* keep existing list if refresh fails */ }
+
         setShowReservationOptions(true);
+        setConfirmation(null);
+        setLoadingGoTo(false);
     }
 
     function closeViewedReservation() {
@@ -326,6 +325,8 @@ export function useReservationFlow() {
         dateError,
         loadingSlots,
         loadingEmail,
+        loadingSubmit,
+        loadingGoTo,
         confirmation,
         activeReservations,
         showReservationOptions,
