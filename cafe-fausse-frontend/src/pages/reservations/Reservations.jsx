@@ -66,6 +66,7 @@ export default function Reservations() {
     setShowReservationOptions,
     setCameFromExplorer,
     startEditing,
+    handleCreateNewFromExplorer,
   } = useReservationFlow();
 
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -164,7 +165,7 @@ export default function Reservations() {
               openReservation={openReservation}
               cancelReservation={cancelReservation}
               startEditing={startEditing}
-              onCreateNew={() => { setShowReservationOptions(false); setCameFromExplorer(true); setStep(2); }}
+              onCreateNew={handleCreateNewFromExplorer}
               onBack={handleBack}
             />
           )}

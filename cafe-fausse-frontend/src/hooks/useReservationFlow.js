@@ -300,6 +300,19 @@ export function useReservationFlow() {
         setShowReservationOptions(true);
     }
 
+    function handleCreateNewFromExplorer() {
+        setConfirmation(null);
+        setShowReservationOptions(false);
+        setCameFromExplorer(true);
+        setEditingReservationId(null);
+        setAvailableSlots([]);
+        setFullyBookedSlots([]);
+        setMessage("");
+        setDateError("");
+        setFormData(prev => ({ ...prev, date: "", time: "", guests: "" }));
+        setStep(2);
+    }
+
     async function cancelReservation(reservationId) {
         try {
             await cancelReservationById(reservationId);
@@ -350,6 +363,7 @@ export function useReservationFlow() {
         setStep,
         setShowReservationOptions,
         setCameFromExplorer,
-        startEditing
+        startEditing,
+        handleCreateNewFromExplorer
     };
 }
